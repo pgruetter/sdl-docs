@@ -12,7 +12,7 @@ This will resolve all dependencies and build a JAR file to run Smart Data Lake B
 Version 1.x
 - *Spark 2.4*
 - JDK 8 (Spark 2 doesn't support JDK 9 or higher)
-- Scala 2.11 or 2.12
+- Scala 2.11 or 2.12 (you can switch between the two with Maven profiles)
 - Maven 3.0 (or higher)
 
 Version 2.x
