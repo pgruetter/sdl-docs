@@ -1,7 +1,7 @@
 module.exports = {
   docs: {
-    'Smart Data Lake' : ['intro'],
-    'Getting Started' : ['build','firstConfig','firstRun']//,
+    'Smart Data Lake' : ['intro','overview'],
+    'Getting Started' : ['build','firstConfig','firstRun','nextSteps']//,
     //'HOCON Configuration' : ['hoconOverview','hoconDataObjects','hoconActions'],
     //'Concepts': ['dag','executionPhases'],
     //'Features': ['featuresOverview'],

@@ -1,13 +1,13 @@
 module.exports = {
   title: 'Smart Data Lake Builder',
   tagline: 'Framework to quickly build and maintain Smart Data Lakes',
-  url: 'http://www.smartdatalake.ch',
+  url: 'https://github.com/pgruetter',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'smart-data-lake', // Usually your GitHub org/user name.
-  projectName: 'smart-data-lake', // Usually your repo name.
+  organizationName: 'pgruetter', // Usually your GitHub org/user name.
+  projectName: 'sdl-docs', // Usually your repo name.
   themeConfig: {
     hideableSidebar: true,
     navbar: {
