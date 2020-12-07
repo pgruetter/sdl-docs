@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[13],{81:function(e){e.exports=JSON.parse('{"greeting":{"allTagsPath":"/sdl-docs/blog/tags","slug":"greeting","name":"greeting","count":1,"permalink":"/sdl-docs/blog/tags/greeting"}}')}}]);
