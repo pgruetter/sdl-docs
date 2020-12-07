@@ -32,7 +32,7 @@ Some common use cases include:
 * Data migration - Efficiently create one-time data pipelines
 * Data Catalog / Data Lineage - Generated automatically from metadata
 
-See [Features](docs/Features.md) for a comprehensive list of Smart Data Lake Builder features.
+See (docs/Features.md) for a comprehensive list of Smart Data Lake Builder features.
 
 ## How it works
 The following diagram shows the core concepts:
@@ -58,7 +58,7 @@ All metadata i.e. connections, data objects and actions are defined in a central
 The file format used is [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) which makes it easy to edit.
 
 ### Getting Started
-To see how all this works in action, head over to the [Getting Started](docs/GettingStarted.md) page.
+To see how all this works in action, head over to the (docs/GettingStarted.md) page.
 
 # Major Contributors
 ![SBB](images/SBB_logo.png)  

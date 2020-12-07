@@ -5,9 +5,9 @@ sidebar_label: First Configuration
 ---
 
 The following page will show you how to build the project and run your first feed.
-For a more comprehensive explanation of all options, see the [Reference](Reference.md).
+For a more comprehensive explanation of all options, see the (Reference.md).
 
-To run a first example, you need the jar file (see [Build](#Build)), an application.conf and some sample data.
+To run a first example, you need the jar file (see #Build)), an application.conf and some sample data.
 
 ## Configure
 To run a first example, you need to create a file called **application.conf** in a folder we will call **resource folder** from now on.
