@@ -1,7 +1,5 @@
 ---
-sidebar_position: 2
 title: Get Departures
-description: My document description
 ---
 
 ## Goal
@@ -39,7 +37,7 @@ Here, we first created the dataObjects section. This section will contain our da
 Inside, we defined two dataObjects:
 - ext-departures: the datasource where we get our data. We set it's type to WebserviceFileDataObject to tell SDL that
 it should look for a file on the web. And we provide the url.
-- stg-departures: our download of that file. Type JsonFileDataObject tells SDL that the Fileformat is JSON and *path = ext-departures*
+- stg-departures: our download of that file. Type JsonFileDataObject tells SDL that the Fileformat is JSON and *path = stg-departures*
 tells it to download it to a directory with that name. You could choose any name you want, but most of the time, the name of your dataObject is a good fit.
 
 A quick note on our naming conventions: We typically follow some conventions when naming our dataObjects and actions.

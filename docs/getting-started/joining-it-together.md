@@ -1,12 +1,12 @@
 ---
-sidebar_position: 4
 title: Joining It Together
-description: My document description
 ---
 
 ## Goal
-
-Join Departures Data with airports to get readable airport names
+In this step we will finally join both data sources together.
+We will continue based upon the config file available [here](application-download-part1-cols.conf).
+At the end of the step, we will have all planes departing from Bern Aiport
+in the given timeframe readable Airport names attached
 
 ## Define output object
 btl_departures_airports

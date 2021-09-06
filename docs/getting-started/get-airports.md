@@ -1,7 +1,5 @@
 ---
-sidebar_position: 3
 title: Get Airports
-description: My document description
 ---
 
 ## Goal
@@ -21,7 +19,7 @@ The only notable difference is that you needed to use the type **CsvFileDataObje
 though you would not get an error at this point if you would have chosen another fileformat, since we don't do anyhting with it yet.
 
 You can start the same *docker run* command as before and you should see the that both directories
-ext-airports and ext-departures have new files.
+stg-airports and stg-departures have new files.
 Notice that since both actions have the same feed, the option *--feed-sel download* executes both of them.
 
 ## Mess Up the Solution
@@ -52,7 +50,7 @@ by just looking at the config file. Only if both of these pre-validations are OK
 
 
 These pre-validations will become more and more valuable with the increasing complexity of your data pipelines.
-Speaking of increasing complexity: In the next step, we will combine both data sources.
+Speaking of increasing complexity: In the next step, we will begin tranforming our data.
 
 
 

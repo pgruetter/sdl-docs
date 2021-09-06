@@ -9,6 +9,7 @@ module.exports = {
         'Part 1': [
           'getting-started/get-departures',
           'getting-started/get-airports',
+          'getting-started/select-columns',
           'getting-started/joining-it-together',
           'getting-started/joining-and-arrivals',
           'getting-started/compute_distances'
