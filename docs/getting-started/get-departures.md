@@ -22,7 +22,7 @@ If you have more than one action, you will also have at least one *dataObject* f
 In our case, in order to get our departures data, we are going to build one action. Hence we need one dataObject for our input, and one for our output.
 Create a directory called config and in that directory, create an empty file called application.conf. This is where we will define our data pipeline.
 
-## Define departues objects
+## Define departures objects
 Add this to the file:
 
     dataObjects {
@@ -40,9 +40,22 @@ Inside, we defined two dataObjects:
 - ext-departures: the datasource where we get our data. We set it's type to WebserviceFileDataObject to tell SDL that
 it should look for a file on the web. And we provide the url.
 - stg-departures: our download of that file. Type JsonFileDataObject tells SDL that the Fileformat is JSON and *path = ext-departures*
-tells it to download it to a directory with that name.
+tells it to download it to a directory with that name. You could choose any name you want, but most of the time, the name of your dataObject is a good fit.
 
-## Define download_ext_departures action
+A quick note on our naming conventions: We typically follow some conventions when naming our dataObjects and actions.
+It follows the layering conventions of the typical Data Lake :
+- External dataObjects should be prefixed with ext
+- Your first action typically copyies the data into the datalake, without making any changes. This layer is called the *Staging Layer*.
+DataObjects of the staging layer start with the stg-prefix.
+- When applying some basic transformation to your data that does not require any specific business logic, you store the result in the *Integration Layer*. 
+Some of these transformations are Data Deduplication, Historization and Format Standardization.
+DataObjects of the Integration Layer start with the int-prefix.
+- When applying business logic to your data, you store the result in the *Business Tranformation Layer*.
+DataObjects of the Business Tranformation Layer start with the btl-prefix.
+
+In our case, we simply copy the data exactly as is. Hence, our output dataObject belongs to the Staging-Layer.
+
+## Define download-ext-departures
 After the dataObjects section, put this to the file:
 
     actions {
@@ -78,6 +91,9 @@ This time, we add another volume with your config-file and tell the SDL to use i
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel download
 
 After executing it, you will see the file *data/ext_departures/result.json* has been replaced with the output of your pipeline.
+:::info
+Since both web-servers are freely available on the internet, they might restrict your traffic if you try to download the same file over and over again.
+:::
 
 **Congratulations!** You just executed your first feed! Now let's get our second input data source...
 
