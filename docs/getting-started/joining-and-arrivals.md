@@ -1,7 +1,5 @@
 ---
-sidebar_position: 5
 title: Get Departure and Arrival Coordinates
-description: My document description
 ---
 
 ## Goal

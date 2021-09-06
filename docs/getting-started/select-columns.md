@@ -15,8 +15,12 @@ we will wire our new action to the existing  *stg-airports*
 
 ## Define output object
 
-Let's use CsvFileDataObject again. For the name of the object, let's use int-airports.
+Let's use CsvFileDataObject again. There are numerous other possibilities, such as HiveTableDataObject, SplunkDataObject...
+See [this list](https://github.com/smart-data-lake/smart-data-lake/blob/develop-spark3/docs/Reference.md#data-objects) for an overview.
+We use CsvFileDataObjects in this part of the tutorial for simplicity.
+
 We're buildiung our Integration Layer of airport data: We are performing a simple Action without any hardcore business logic involved.
+Therefore, let's use int-airports as the name of the object.
 Put this in the existing dataObjects section:
 
       int-airports {

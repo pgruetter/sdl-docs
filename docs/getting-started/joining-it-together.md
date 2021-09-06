@@ -4,7 +4,7 @@ title: Joining It Together
 
 ## Goal
 In this step we will finally join both data sources together.
-We will continue based upon the config file available [here](application-download-part1-cols.conf).
+We will continue based upon the config file available [here](application-compute-part1-cols.conf).
 At the end of the step, we will have all planes departing from Bern Aiport
 in the given timeframe along with their readable Destination Airport names, as well as geo-coordinates.
 
@@ -17,32 +17,41 @@ Like in the previous step, we need one more action and one dataObject for our ou
         path = btl-connected-airports
       }
 
-
-
 ## Define join_departures_airports action
 
-    join_departures_airports {
-    type = CustomSparkAction
-    inputIds = [stg_departures, stg_airports]
-    outputIds = [btl_connected_airports]
-    transformers = [{
-    type = SQLDfsTransformer
-    code = {
-    btl_departures_airports = """select deps.name as dep_name,
-    stg_departures.estdepartureairport, stg_departures.estarrivalairport,
-    deps.latitude_deg as dep_latitude_deg, deps.longitude_deg as dep_longitude_deg
-    from stg_departures join stg_airports deps on stg_departures.estDepartureAirport = deps.ident"""
-    }
-    }
-    ]
-    metadata {
-    feed = compute
-    }
-    }
-Explain CustomSparkAction,SQLDfsTransformer
-Explain other feed
-Explain name referencing in the config
+      join_departures_airports {
+        type = CustomSparkAction
+        inputIds = [stg-departures, int-airports]
+        outputIds = [btl-connected-airports]
+        transformers = [{
+          type = SQLDfsTransformer
+          code = {
+            btl-connected-airports = """select stg_departures.estdepartureairport, stg_departures.estarrivalairport,
+            airports.name, airports.latitude_deg, airports.longitude_deg
+             from stg_departures join int_airports airports on stg_departures.estArrivalAirport = airports.ident"""
+          }
+        }
+        ]
+        metadata {
+          feed = compute
+        }
+      }
+This time, we changed the Action Type from CopyAction to CustomSparkAction.
+Use CustomSparkAction when you need to do complex operations. For instance, CustomSparkAction allows multiple inputs,
+which CopyAction does not.
+Notice that our input/output fields are now called inputId**s** and outputId**s** and that they take a list of dataObject ids.
+Then, instead of allowing for just one transformer, we could potentially have multiple transformers within the same action.
+We don't use that for now and just add one transformer of the type SQLDf**s**Transformer.
+The **s** is important, since it shows that multiple inputs/output dataObjects are possible.
+We could also define a SQLDfTransformer that only knows one input and one output.
+Finally, it expects it's code as an object rather than as a string. This is due to the fact that you could have multiple
+outputs, in which case you would need to name them in order to distinguish them.
+In our case, there is only one output dataObject: btl-connected-airports.
+The SQL-Code itself is just a join between the two input dataObjects on the ICAO identifier.
 
+
+
+TODO omit the s in SQLDfsTransformer and show the error
 
 ## Try it out
 
