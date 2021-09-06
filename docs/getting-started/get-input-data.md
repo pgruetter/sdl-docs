@@ -7,7 +7,7 @@ title: Inputs
 Let's say your friend Tom is fan of railways and he lives next to an airport.
 He wonders how many of these flights that start from his neighborhood could be replaced by rail traffic.
 
-You just discovered this tool called Smart Datalake Builder that's supposedly good for combining data from different sources and performing some analysis on it.
+You just discovered this tool called Smart Data Lake Builder that's supposedly good for combining data from different sources and performing some analysis on it.
 So you decide to help Tom by trying it that framework.
 
 
@@ -49,6 +49,6 @@ the folder *data/ext_airports/result.csv*.
 
 Now that we know our input data, we can start our analysis.
 In the next page, we will start Part 1 of the Getting Started Guide 
-to do our first steps with Smart Datalake Builder.
+to do our first steps with Smart Data Lake Builder.
 
 

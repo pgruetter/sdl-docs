@@ -7,7 +7,10 @@ description: My document description
 ## Goal
 
 Download airports.csv
-
+Download departures.
+Include a config error to see how to debug.
+Briefly explain that there is a pre-phase (link to main article).
+Explain dag a bit
 ## Define airport objects
 One input object, one output object:
 
@@ -44,5 +47,8 @@ Explain feed
 ## Try it out
 
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config demo:latest -c /mnt/config --feed-sel download
+:::danger Whoops!
+This does not work, can you spot the mistake?
+
 Explanation command
 You should see a file named ... in your pwd
