@@ -58,7 +58,7 @@ All metadata i.e. connections, data objects and actions are defined in a central
 The file format used is [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) which makes it easy to edit.
 
 ### Getting Started
-To see how all this works in action, head over to the (docs/GettingStarted.md) page.
+To see how all this works in action, head over to the [Getting Started Guide](getting-started/setup.md) page.
 
 # Major Contributors
 ![SBB](images/SBB_logo.png)  
