@@ -6,15 +6,16 @@ title: Joining It Together
 In this step we will finally join both data sources together.
 We will continue based upon the config file available [here](application-download-part1-cols.conf).
 At the end of the step, we will have all planes departing from Bern Aiport
-in the given timeframe readable Airport names attached
+in the given timeframe along with their readable Destination Airport names, as well as geo-coordinates.
+
+Like in the previous step, we need one more action and one dataObject for our output.
 
 ## Define output object
-btl_departures_airports
 
-    btl_departures_airports {
-    type = CsvFileDataObject
-    path = connected-airports
-    }
+      btl-connected-airports {
+        type = CsvFileDataObject
+        path = btl-connected-airports
+      }
 
 
 
