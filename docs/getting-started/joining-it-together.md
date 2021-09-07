@@ -27,7 +27,7 @@ Like in the previous step, we need one more action and one dataObject for our ou
           type = SQLDfsTransformer
           code = {
             btl-connected-airports = """select stg_departures.estdepartureairport, stg_departures.estarrivalairport,
-            airports.name, airports.latitude_deg, airports.longitude_deg
+            airports.*
              from stg_departures join int_airports airports on stg_departures.estArrivalAirport = airports.ident"""
           }
         }
@@ -48,6 +48,7 @@ Finally, it expects it's code as an object rather than as a string. This is due 
 outputs, in which case you would need to name them in order to distinguish them.
 In our case, there is only one output dataObject: btl-connected-airports.
 The SQL-Code itself is just a join between the two input dataObjects on the ICAO identifier.
+Note that we can just select all columns from airports, since we selected the ones that interest us in the previous step.
 
 ## Try it out
 You can run the usual *docker run* command:

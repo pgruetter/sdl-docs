@@ -45,7 +45,7 @@ Put this in the existing actions section:
 We just defined a new action called select-airport-cols. We wired it together with the two dataObjects
 stg-airports and int-airports.
 We used a new type of Action: CopyAction. This action is intended to copy the data from one format to another,
-where simple transformations of the data can be done along the way.
+where one transformation of the data can be done along the way.
 We defined our transformation with the sqlCode *"select ident, name, latitude_deg, longitude_deg from stg_airports"*
 
 :::caution

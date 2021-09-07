@@ -11,8 +11,8 @@ module.exports = {
           'getting-started/get-airports',
           'getting-started/select-columns',
           'getting-started/joining-it-together',
-          'getting-started/joining-and-arrivals',
-          'getting-started/compute_distances'
+          'getting-started/joining-departures-and-arrivals',
+          'getting-started/compute-distances'
         ]
       }
 
