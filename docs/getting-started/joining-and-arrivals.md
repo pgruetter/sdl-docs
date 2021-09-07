@@ -1,5 +1,5 @@
 ---
-title: Get Departure and Arrival Coordinates
+title: Get Departure Coordinates
 ---
 
 ## Goal

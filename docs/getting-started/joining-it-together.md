@@ -49,14 +49,12 @@ outputs, in which case you would need to name them in order to distinguish them.
 In our case, there is only one output dataObject: btl-connected-airports.
 The SQL-Code itself is just a join between the two input dataObjects on the ICAO identifier.
 
-
-
-TODO omit the s in SQLDfsTransformer and show the error
-
 ## Try it out
+You can run the usual *docker run* command:
 
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config demo:latest -c /mnt/config --feed-sel compute
-Explanation command, other feed.
 
-You should see a file named ... in your pwd
-Arrivals are missing let s add them
+You should now see the resulting files in *data/btl-connected-airports*.
+Great! Now we have names and coordinates of destination airports.
+Now we are just missing the coordinates of Bern Airport. 
+Let's add them in the next step.

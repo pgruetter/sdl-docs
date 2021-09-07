@@ -42,11 +42,15 @@ This is a very common error and the stacktrace should help you to quickly find a
 Try to fix one of the errors and keep the other one to see what happens: Nothing.
 Why is that? 
 
-SDL validates your conf file before executing it's contents.
-If the file does not make sense, it will abort before executing anything to minimize the chance that you'll end up
-in an inconsitent state. After validating the file, it performs a "pre-step" in which it executes
+SDL validates your conf file before executing it's contents :
+- If the file does not make sense, it will abort before executing anything to minimize the chance that you'll end up
+in an inconsitent state. That's called the "Prepare" step.
+- After validating the file, it performs a step called "init" in which it executes
 the whole feed without any data to spot incompatibilitites between the dataObjects that cannot be spotted
-by just looking at the config file. Only if both of these pre-validations are OK, SDL will execute the feeds.
+by just looking at the config file. 
+
+When running SDL, you can find that "init" and "prepare" steps are mentionend in the logs.
+ Only if both of these validations are OK, SDL will execute the feeds.
 
 
 These pre-validations will become more and more valuable with the increasing complexity of your data pipelines.
