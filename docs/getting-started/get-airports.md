@@ -44,9 +44,9 @@ Why is that?
 
 SDL validates your conf file before executing it's contents :
 - If the file does not make sense, it will abort before executing anything to minimize the chance that you'll end up
-in an inconsitent state. That's called the "Prepare" step.
+in an inconsistent state. That's called the "Prepare" step.
 - After validating the file, it performs a step called "init" in which it executes
-the whole feed without any data to spot incompatibilitites between the dataObjects that cannot be spotted
+the whole feed without any data to spot incompatibilities between the dataObjects that cannot be spotted
 by just looking at the config file. 
 
 When running SDL, you can find that "init" and "prepare" steps are mentionend in the logs.

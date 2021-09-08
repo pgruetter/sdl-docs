@@ -17,6 +17,7 @@ we will wire our new action to the existing  *stg-airports*
 
 Let's use CsvFileDataObject again. There are numerous other possibilities, such as HiveTableDataObject, SplunkDataObject...
 See [this list](https://github.com/smart-data-lake/smart-data-lake/blob/develop-spark3/docs/Reference.md#data-objects) for an overview.
+You can also consult the [API docs](https://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/dataobject/index.html) to see how to use all those dataObjects.
 We use CsvFileDataObjects in this part of the tutorial for simplicity.
 
 We're buildiung our Integration Layer of airport data: We are performing a simple Action without any hardcore business logic involved.
@@ -28,7 +29,8 @@ Put this in the existing dataObjects section:
         path = int-airports
       }
 
-## Define select-airport-cols action with custom sqlCode
+## Define select-airport-cols action 
+### CopyAction with custom sqlCode
 
 Put this in the existing actions section:
 
@@ -56,33 +58,7 @@ SDL works around this by replacing hyphens with underscores for you.
 
 :::
 
-Also note that we used a differente feed this time that we called *compute*. 
-We will keep expanding the feed *compute* from now on.
-This allows us to keep the data we downloaded in the previous steps in our local files and just
-try out our new actions.
-
-## Try out approach 1
-
-This time, we changed the feed to compute:
-
-    docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel compute
-
-Now you should see multiple files in the folder *data/int-airports*. Why is it split accross multiple files?
-This is due to the fact that the query runs with spark under the hood which computes the query in parallel for different portions of the data.
-We might work on a small data set for now, but keep in mind that this would scale up horizontally for large amounts of data.
-
-## Break approach 1
-
-To give you some experience on how to debug your config, you can also try out what happens if you change the type of *stg-airports* to JsonFileDataObject.
-You will get an error message that hints that there might be some format problem, but it is hard to spot :
-
-     Error: cannot resolve '`ident`' given input columns: [stg_airports._corrupt_record]; line 1 pos 7;
-
-Since Spark tries to parse a CSV-File with a JSON-Parser, it is unable to properly read the data.
-However, it generates a column named *_corrupt_record* describing what went wrong.
-After that, the query fails, because it only finds that column with error messages instead of the actual data.
-
-## Define select-airport-cols action with column whitelist
+### CopyAction with a column whitelist
 
 Actually, there is an even simpler way to select only a subset of the columns of a dataObject.
 The CopyAction has a option called columnWhitelist which allows you to do just that.
@@ -101,9 +77,60 @@ So we can simplify our action by replacing it with the following code:
 There are numerous other options available, which you can view in the [API Docs](http://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/action/CopyAction.html).
 
 
-## Try out approach 2
 
-Run the same docker command again to make sure that the results are the same.
+## Try it out
+Note that we used a different feed this time that we called *compute*. 
+We will keep expanding the feed *compute* from now on.
+This allows us to keep the data we downloaded in the previous steps in our local files and just
+try out our new actions.
 
-In the next step, we will join our data together.
+To execute the pipeline, use the same command as before, but change the feed to compute:
+
+    docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel compute
+
+Now you should see multiple files in the folder *data/int-airports*. Why is it split accross multiple files?
+This is due to the fact that the query runs with spark under the hood which computes the query in parallel for different portions of the data.
+We might work on a small data set for now, but keep in mind that this would scale up horizontally for large amounts of data.
+
+## More on Feeds
+
+SDL gives you precise control on which actions you want to execute. 
+For instance if you only want to execute the action that we just wrote, you can type
+
+    docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel ids:select-airport-cols
+
+SDL also allows you to use combinations of expressions to select the actions you want to execute. You can run
+
+    docker run --rm smart-data-lake/gs1:latest --help
+
+to see all options that are available.
+
+One popular option is to use regular expressions to execute multiple feeds together.
+In our case, we can run the entire data pipeline with the following command : 
+
+    docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel .*
+
+:::caution
+
+In our tutorial, this command will only work if you already have some files under *data/stg-airports* and data/stg-departures.
+This is because in the first step, we download files of which we don't know the schema in advance.
+The init-phase will require that for all dataObjects, the schema is known so that it can check for incompatibilities.
+When we already have some files, it will infer the schema based upon the files.
+One way to prevent this problem is to explicitly provide the schema for the JSON and for the CSV-File, 
+which is out of the scope of this tutorial.
+
+:::
+
+
+
+## Break approach 1
+
+To give you some experience on how to debug your config, you can also try out what happens if you change the type of *stg-airports* to JsonFileDataObject.
+You will get an error message that hints that there might be some format problem, but it is hard to spot :
+
+     Error: cannot resolve '`ident`' given input columns: [stg_airports._corrupt_record]; line 1 pos 7;
+
+Since Spark tries to parse a CSV-File with a JSON-Parser, it is unable to properly read the data.
+However, it generates a column named *_corrupt_record* describing what went wrong.
+After that, the query fails, because it only finds that column with error messages instead of the actual data.
 

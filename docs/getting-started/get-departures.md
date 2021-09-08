@@ -39,7 +39,8 @@ Inside, we defined two dataObjects:
 it should look for a file on the web. And we provide the url.
 - stg-departures: our download of that file. Type JsonFileDataObject tells SDL that the Fileformat is JSON and *path = stg-departures*
 tells it to download it to a directory with that name. You could choose any name you want, but most of the time, the name of your dataObject is a good fit.
-TODO use {~id }^somehwhere? dataObjectId?
+
+- TODO use {~id }^somewhere? dataObjectId?
 
 A quick note on our naming conventions: We typically follow some conventions when naming our dataObjects and actions.
 It follows the layering conventions of the typical Data Lake :
