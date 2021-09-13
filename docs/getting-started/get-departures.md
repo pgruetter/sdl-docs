@@ -44,9 +44,9 @@ We defined a relative path - it is relative to the working directory SDL is star
 
 - TODO use {~id }^somewhere? dataObjectId?
 
-A quick note on our naming conventions: We typically follow some conventions when naming our dataObjects and actions.
+A quick note on our naming conventions: We typically follow some conventions when naming our Data Objects and actions.
 It follows the layering conventions of the structured Data Lake :
-- External dataObjects are prefixed with "ext",
+- External Data Objects are prefixed with "ext",
 - Your first action typically copies the data into the Data Lake, without making any changes. This layer is called the *Staging Layer*.
 DataObjects of the staging layer are prefixed with "stg".
 - When applying some basic transformation to your data that does not require any specific business logic, you store the result in the *Integration Layer*. 
@@ -75,7 +75,7 @@ We added another section called actions, in which, you guessed it, all actions r
 We defined our action and called it *download-departures*.
 - The type *FileTransferAction* tells SDL that it should transfer a file from one place to another.
 In our case, from a location on the web to a place on your machine.
-- With inputId and outputId, we wire this action and the two dataObjects together.
+- With inputId and outputId, we wire this action and the two Data Objects together.
 - Finally, we added some metadata to our action. Metadata is often used to select the actions run.
 In our case, we defined a feed called "download". When starting SDL, we can tell it to execute only actions corresponding to certain feeds.
 Multiple actions can be associated with the same feed. You can think of feeds as group of actions in your data pipeline, typically processing a data type through all layers.

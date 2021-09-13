@@ -42,12 +42,12 @@ which CopyAction does not.
 Notice that our input/output fields are now called inputId**s** and outputId**s** and that they take a list of dataObject ids.
 Then, instead of allowing for just one transformer, we could potentially have multiple transformers within the same action.
 We don't use that for now and just add one transformer of the type SQLDf**s**Transformer.
-The **s** is important, since it shows that multiple inputs/output dataObjects are possible.
+The **s** is important, since it shows that multiple inputs/output Data Objects are possible.
 We could also define a SQLDfTransformer that only knows one input and one output.
 Finally, it expects it's code as an object rather than as a string. This is due to the fact that you could have multiple
 outputs, in which case you would need to name them in order to distinguish them.
 In our case, there is only one output dataObject: btl-connected-airports.
-The SQL-Code itself is just a join between the two input dataObjects on the ICAO identifier.
+The SQL-Code itself is just a join between the two input Data Objects on the ICAO identifier.
 Note that we can just select all columns from airports, since we selected the ones that interest us in the previous step.
 
 ## Try it out

@@ -17,7 +17,7 @@ we will wire our new action to the existing DataObject *stg-airports*
 
 Let's use CsvFileDataObject again. There are numerous other possibilities, such as HiveTableDataObject, SplunkDataObject...
 See [this list](https://github.com/smart-data-lake/smart-data-lake/blob/develop-spark3/docs/Reference.md#data-objects) for an overview.
-You can also consult the [API docs](https://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/dataobject/index.html) to see how to use all those dataObjects.
+You can also consult the [API docs](https://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/dataobject/index.html) to see how to use all those Data Objects.
 We use CsvFileDataObjects in this part of the tutorial for simplicity.
 
 To build our Integration Layer of airport data we are performing a simple Action without any hardcore business logic involved.
@@ -98,7 +98,7 @@ In our case, we can run the entire data pipeline with the following command :
 
 In our tutorial, this command will only work if you already have some files under *data/stg-airports* and data/stg-departures.
 This is because in the first step, we download files of which we SDL doesn't know the schema in advance.
-The init-phase will require that for all dataObjects, the schema is known so that it can check for incompatibilities.
+The init-phase will require that for all Data Objects, the schema is known so that it can check for incompatibilities.
 When we already have some files, it will infer the schema based upon the files.
 One way to prevent this problem is to explicitly provide the schema for the JSON and for the CSV-File, 
 which is out of the scope of this part of the tutorial.
@@ -109,7 +109,7 @@ which is out of the scope of this part of the tutorial.
 
 ## Example of Common Mistake
 
-One common mistake is mixing up the types on dataObjects.
+One common mistake is mixing up the types on Data Objects.
 To give you some experience on how to debug your config, you can also try out what happens if you change the type of *stg-airports* to JsonFileDataObject.
 You will get an error message which indicates that there might be some format problem, but it is hard to spot :
 

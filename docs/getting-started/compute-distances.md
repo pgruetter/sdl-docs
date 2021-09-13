@@ -86,7 +86,7 @@ In the console, you probably started noticing some ASCII Art that looks like thi
        └────────────────────────────────────────┘
 
 This is the Execution DAG of our data pipeline. 
-It shows you how SDL determined that the dataObjects and actions should be wired together.
+It shows you how SDL determined that the Data Objects and actions should be wired together.
 If you don't get the results you expect, it's good to check if the DAG looks correct.
 
 **Congratulations!**

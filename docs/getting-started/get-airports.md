@@ -48,7 +48,7 @@ If the file does not make sense, it will abort before executing anything to mini
 SDL is built do detect configuration errors as early as possible (early-validation). It does this by going through several phases.
 1. Validate configuration - validate superfluous attributes, missing mandatory attributes, attribute content and consistency when referencing other configuration objects.
 2. *Prepare* run - validate preconditions, e.g. connections and existence of tables and directories.
-3. *Init* run - executes the whole feed *without any data* to spot incompatibilities between the dataObjects that cannot be spotted
+3. *Init* run - executes the whole feed *without any data* to spot incompatibilities between the Data Objects that cannot be spotted
    by just looking at the config file. For example a column which doesn't exist but is referenced in a later Action will fail the init phase.
 4. *Exec* run - only if all previous phases have been passed successfully, execution is started.
 
