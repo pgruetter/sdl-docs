@@ -4,14 +4,14 @@ title: Select Columns
 
 ## Goal
 
-In this step write our first Action that modifies data.
+In this step we write our first Action that modifies data.
 We will continue based upon the config file available [here](application-download-part1.conf).
 When you look at the data in the folder *data/stg-airports/result.csv*, you will notice that we
 don't need most of the columns. In this step, we will write a simple CopyAction that selects only the columns we
 are interested in.
 
-As usual, we need to define an outputObject and an action. We don't need to define a new inputObject, 
-we will wire our new action to the existing  *stg-airports* 
+As usual, we need to define an output DataObject and an action. We don't need to define a new input DataObject as
+we will wire our new action to the existing DataObject *stg-airports* 
 
 ## Define output object
 
@@ -20,7 +20,7 @@ See [this list](https://github.com/smart-data-lake/smart-data-lake/blob/develop-
 You can also consult the [API docs](https://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/dataobject/index.html) to see how to use all those dataObjects.
 We use CsvFileDataObjects in this part of the tutorial for simplicity.
 
-We're buildiung our Integration Layer of airport data: We are performing a simple Action without any hardcore business logic involved.
+To build our Integration Layer of airport data we are performing a simple Action without any hardcore business logic involved.
 Therefore, let's use int-airports as the name of the object.
 Put this in the existing dataObjects section:
 
@@ -43,7 +43,7 @@ Put this in the existing actions section:
         }
       }
 
-We just defined a new action called select-airport-cols. We wired it together with the two dataObjects
+We just defined a new action called select-airport-cols. We wired it together with the two DataObjects
 stg-airports and int-airports.
 We used a new type of Action: CopyAction. This action is intended to copy the data from one format to another,
 where one transformation of the data can be done along the way.
@@ -51,9 +51,10 @@ We defined our transformation with the sqlCode *"select ident, name, latitude_de
 
 :::caution
 
-Notice that we call our input dataObject stg-airports with a hyphen "-", but in the sql, we call it "stg\_airports" with an underscore "_".
-This is due to a limitation in spark, which is used under the hood to execute the query. It does not allow "-" in table names.
-SDL works around this by replacing hyphens with underscores for you.
+Notice that we call our input DataObject stg-airports with a hyphen "-", but in the sql, we call it "stg\_airports" with an underscore "_".
+This is due to SQL standard not allowing "-" in unquoted identifiers (e.g. table names). Under the hood Apache Spark SQL is used to execute the query, which implements SQL standard.
+SDL works around this by replacing special chars in DataObject names used in SQL statements for you. In this case, it automatically replaced
+"-" with "_"
 
 :::
 
@@ -72,7 +73,7 @@ To execute the pipeline, use the same command as before, but change the feed to 
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel compute
 
 Now you should see multiple files in the folder *data/int-airports*. Why is it split accross multiple files?
-This is due to the fact that the query runs with spark under the hood which computes the query in parallel for different portions of the data.
+This is due to the fact that the query runs with Apache Spark under the hood which computes the query in parallel for different portions of the data.
 We might work on a small data set for now, but keep in mind that this would scale up horizontally for large amounts of data.
 
 ## More on Feeds
@@ -96,11 +97,11 @@ In our case, we can run the entire data pipeline with the following command :
 :::caution
 
 In our tutorial, this command will only work if you already have some files under *data/stg-airports* and data/stg-departures.
-This is because in the first step, we download files of which we don't know the schema in advance.
+This is because in the first step, we download files of which we SDL doesn't know the schema in advance.
 The init-phase will require that for all dataObjects, the schema is known so that it can check for incompatibilities.
 When we already have some files, it will infer the schema based upon the files.
 One way to prevent this problem is to explicitly provide the schema for the JSON and for the CSV-File, 
-which is out of the scope of this tutorial.
+which is out of the scope of this part of the tutorial.
 
 :::
 
@@ -110,11 +111,12 @@ which is out of the scope of this tutorial.
 
 One common mistake is mixing up the types on dataObjects.
 To give you some experience on how to debug your config, you can also try out what happens if you change the type of *stg-airports* to JsonFileDataObject.
-You will get an error message that hints that there might be some format problem, but it is hard to spot :
+You will get an error message which indicates that there might be some format problem, but it is hard to spot :
 
      Error: cannot resolve '`ident`' given input columns: [stg_airports._corrupt_record]; line 1 pos 7;
 
-Since Spark tries to parse a CSV-File with a JSON-Parser, it is unable to properly read the data.
+The FileTransferAction will save the result from the Webservice with the JsonFileDataObject as file with filetype *.json. 
+Then Spark tries to parse the CSV-records in the *.json file with a JSON-Parser. It is unable to properly read the data.
 However, it generates a column named *_corrupt_record* describing what went wrong.
 After that, the query fails, because it only finds that column with error messages instead of the actual data.
 

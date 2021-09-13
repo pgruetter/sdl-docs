@@ -23,7 +23,7 @@ To run this example you just need two things:
 ## Run docker image
 
 Let's see smart datalake in action!
-Then run the following commands in the same terminal: to see  :
+Run the following commands in the same terminal to do so:
 
     mkdir data
     docker run --rm -v ${PWD}/data:/mnt/data smart-data-lake/gs1:latest --feed-sel download

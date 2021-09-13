@@ -4,15 +4,15 @@ title: Inputs
 
 ## Goal
 
-Let's say your friend Tom is fan of railways and he lives next to an airport.
+Let's say your friend Tom is a fan of railways and he lives next to an airport.
 He wonders how many of these flights that start from his neighborhood could be replaced by rail traffic.
 
 You just discovered this tool called Smart Data Lake Builder that's supposedly good for combining data from different sources and performing some analysis on it.
-So you decide to help Tom by trying it that framework.
+So you decide to help Tom by trying that framework.
 
 
 ## Our Input Data
-Our first step is to get the some input data.
+Our first step is to get the input data.
 After browsing the web a bit, you end up finding a website that look promising.
 
 ### departures
@@ -41,14 +41,14 @@ You end up finding a [website](https://ourairports.com/data/) that has just that
 It hosts a csv-File called airports.csv which has what you need.
 
 :::info
-Notice that the this CSV-File is exactly what was downloaded in the previous step into
+Notice that this CSV-File is exactly what was downloaded in the previous step into
 the folder *data/ext_airports/result.csv*.
 :::
 
 ## Next step
 
 Now that we know our input data, we can start our analysis.
-In the next page, we will start Part 1 of the Getting Started Guide 
+In the next step, we will start *Part 1 of the Getting Started Guide* 
 to do our first steps with Smart Data Lake Builder.
 
 
