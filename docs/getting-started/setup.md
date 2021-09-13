@@ -14,16 +14,18 @@ To run this example you just need two things:
 ## Build docker image
 
 - Download the source code of the example either via git or by [downloading the zip](https://github.com/smart-data-lake/getting-started/archive/refs/heads/master.zip) and extracting it.
-- Open up a terminal and change to the folder with the source that contains the file called Dockerfile.
+- Open up a terminal and change to the folder with the source, you should see a file called Dockerfile.
 - Then run:
 
 
     docker build -t smart-data-lake/gs1 .
 
+
+
 ## Run docker image
 
-Let's see smart datalake in action!
-Run the following commands in the same terminal to do so:
+Let's see Smart Data Lake in action!
+Run the following commands in the same terminal:
 
     mkdir data
     docker run --rm -v ${PWD}/data:/mnt/data smart-data-lake/gs1:latest --feed-sel download
@@ -31,7 +33,7 @@ Run the following commands in the same terminal to do so:
 This creates a folder in the current directory named *data* and then 
 executes a simple data pipeline that downloads two files from two different websites into that directory.
 
-When the execution is complete, you should see them in the *data* folder.
+When the execution is complete, you should see the two files in the *data* folder.
 Wonder what happened ? You will create the data pipeline that does just this in the first steps of this guide.
 
 **Congratulations!** You're now all setup! Head over to the next step to analyse these files...

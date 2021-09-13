@@ -4,10 +4,10 @@ title: Get Departure Coordinates
 
 ## Goal
 
-In this step we will extend the [conf-file](application-compute-part1-join.conf) of the previous step
+In this step we will extend the [configuration file](application-compute-part1-join.conf) of the previous step
 so that we get the coordinates and the readable name of Bern Airport in our final data.
 Since we re are dealing with just one record, we could manually add it to the data set.
-But what if we wanted to extend our program to other departure airports in the future?
+But what if we wanted to extend our project to other departure airports in the future?
 We'll do it in a generic way by adding another transformer into the action *join_departures_airports*
 
 ## Define join_departures_airports action
@@ -41,13 +41,13 @@ Let's start in an unusual way by first changing the action. You'll see why short
       }
 
 We added a second transformer of the type SQLDfsTransformer.
-It's SQL Code references the result of the first transformer: btl-connected-airports (btl_connected_airports in SparkSQL).
+It's SQL Code references the result of the first transformer: *btl-connected-airports* (remember the underscores, so *btl_connected_airports* in SparkSQL).
 SDL will execute these transformations in the order you defined them, which allows you to chain them together, like we have done.
 
 In the second SQL-Code, we join the result of the first SQL again with int_airports, but this time using estdepartureairport as key
 to get the name and coordinates of the departures airport, Bern Airport.
 We also renamed these columns so that they are distinguishable from the names and coordinates of the arrival airports.
-Finally, we put the result into a dataObject called btl-departures-arrivals-airports.
+Finally, we put the result into a dataObject called *btl-departures-arrivals-airports*.
 
 ## Define output object
 
@@ -62,15 +62,14 @@ But, this time we can simply delete the dataObject btl-connected-airports.
 This is because it is now only a temporary result within an action.
 This is a key difference between chaining actions and chaining transformations within the same action:
 you don't have intermediary results. 
-Another difference is that you cannot run an individual transformation alone.
-You can only run entire actions.
+Another difference is that you cannot run an individual transformation alone, you can only run entire actions.
 
 
 ## Try it out
 
 [This](application-compute-part1-dep-arr.conf) is how your config should look like by now.
 
-When running the example, you should see a CSV with departure and arrival airport names and coordinates.
+When running the example, you should see a CSV file with departure and arrival airport names and coordinates.
 
-Great! Now we have all the data we need in one place. All that is left to do is to compute the distance
-between departure and arrival coordinates. Let's do that in the final step of this part.
+Great! Now we have all the data we need in one place. Only thing left to do is to compute the distance
+between departure and arrival coordinates. Let's do that in the final step of part 1.

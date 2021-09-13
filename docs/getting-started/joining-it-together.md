@@ -3,10 +3,11 @@ title: Joining It Together
 ---
 
 ## Goal
+So now we have data from departures in our stage layer, and we have cleaned data for airports in our integration layer.
 In this step we will finally join both data sources together.
-We will continue based upon the config file available [here](application-compute-part1-cols.conf).
-At the end of the step, we will have all planes departing from Bern Aiport
-in the given timeframe along with their readable Destination Airport names, as well as geo-coordinates.
+We will continue based on the config file available [here](application-compute-part1-cols.conf).
+At the end of the step, we will have all planes departing from Bern Airport
+in the given timeframe along with their readable destination airport names, as well as geo-coordinates.
 
 Like in the previous step, we need one more action and one dataObject for our output.
 
@@ -36,19 +37,29 @@ Like in the previous step, we need one more action and one dataObject for our ou
           feed = compute
         }
       }
-This time, we changed the Action Type from CopyAction to CustomSparkAction.
+
+Now it gets interesting, a couple of things to note here:
+- This time, we changed the Action Type from CopyAction to CustomSparkAction.
 Use CustomSparkAction when you need to do complex operations. For instance, CustomSparkAction allows multiple inputs,
 which CopyAction does not.
-Notice that our input/output fields are now called inputId**s** and outputId**s** and that they take a list of dataObject ids.
-Then, instead of allowing for just one transformer, we could potentially have multiple transformers within the same action.
-We don't use that for now and just add one transformer of the type SQLDf**s**Transformer.
-The **s** is important, since it shows that multiple inputs/output Data Objects are possible.
+- Our input/output fields are now called inputId**s** and outputId**s** and that they take a list of dataObject ids.
+- Instead of allowing for just one transformer, we could potentially have multiple transformers within the same action that
+get executed on after the other. 
+We don't use that for now and just add one transformer of type SQLDf**s**Transformer.
+Again, the **s** is important, since it shows that multiple inputs/output Data Objects are possible.
 We could also define a SQLDfTransformer that only knows one input and one output.
-Finally, it expects it's code as an object rather than as a string. This is due to the fact that you could have multiple
+- Finally, it expects it's code as an object rather than as a string. This is due to the fact that you could have multiple
 outputs, in which case you would need to name them in order to distinguish them.
-In our case, there is only one output dataObject: btl-connected-airports.
+In our case, there is only one output dataObject: *btl-connected-airports*.
 The SQL-Code itself is just a join between the two input Data Objects on the ICAO identifier.
 Note that we can just select all columns from airports, since we selected the ones that interest us in the previous step.
+
+:::tip Tip: Use only one output
+As you can see, with CustomSparkAction it's possible to read from multiple inputs and write to multiple outputs.
+We usually discourage writing to multiple data objects in one action though. 
+At some point, you will want to use the metadata from SDL to analyze your data lineage. 
+Always using one data object as output will make your data lineage much more readable and clear.
+:::
 
 ## Try it out
 You can run the usual *docker run* command:

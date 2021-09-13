@@ -5,7 +5,7 @@ title: Compute Distances
 ## Goal
 
 In this part, we will compute the distances between departure and arrival airports
-so that our railway enthousiast Tom can see which planes could be replaced by rail traffic.
+so that our railway enthusiast Tom can see which planes could be replaced by rail traffic.
 
 
 ## Define output object
@@ -19,15 +19,19 @@ Let's define our final output object for this part:
 
 ## Define compute_distances action
 
-How to we compute the distances ? 
+How do we compute the distances ? 
 The answer is in the file *src/main/scala/com/sample/ComputeDistanceTransformer.scala*.
-SDL allows you to write custom code and reference it in the config.
+
+So far, we only used SQL transformers. 
+But more complex transformations can be written in custom code and reference it in the config.
 This gives you great flexibility for cases with specific business logic, such as this one.
-We have one input and one output: therefore our custom class is a *CustomDfTransformer*.
+
+We have one input and one output: therefore our custom class is a *CustomDfTransformer* (instead of CustomDf**s**Transformer).
 It takes the input dataframe *df* and calls a User Defined Function called *calculateDistanceInKilometerUdf*
 to do the computation.
 It expects the column names dep_latitude_deg, dep_longitude_deg, arr_latitude_deg and arr_longitude_deg in the input.
 This matches the column names we used in the SQL-Code in the last-step.
+
 We won't go into the details of the Udf. 
 You can follow this [stackoverflow link](https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula)
 if you want to learn more.
@@ -48,9 +52,9 @@ In order to wire this CustomTransformation into our config, we add the following
         }
       }
 
-We used a CopyAction and told it to execute the code in the class *com.sample.ComputeDistanceTransformer*.
+We used a CopyAction and told it to execute the code in the class *com.sample.ComputeDistanceTransformer* to transform the data.
 We could also have used a CustomSparkAction like in the previous step, 
-but this would have required more to write since it requires lists of inputs, outputs and transformers.
+but this would have resulted in more complex code working with lists of inputs, outputs and transformers.
 
 
 ## Try it out
@@ -63,7 +67,7 @@ Under *data/btl-distances* you can now see the final result.
 
 ### The Execution DAG
 
-In the console, you probably started noticing some ASCII Art that looks like this:
+In the console, you probably started noticing some pretty ASCII Art that looks like this:
 
                          ┌─────┐
                          │start│
@@ -85,14 +89,26 @@ In the console, you probably started noticing some ASCII Art that looks like thi
        │compute_distances SUCCEEDED PT1.160045S│
        └────────────────────────────────────────┘
 
-This is the Execution DAG of our data pipeline. 
-It shows you how SDL determined that the Data Objects and actions should be wired together.
-If you don't get the results you expect, it's good to check if the DAG looks correct.
+This is the Execution *DAG* of our data pipeline. 
+SDL internally builds a Directed Acyclic Graph (DAG) to analyze all dependencies between your actions. 
+Because it's acyclic, it cannot have loops, so it's impossible to define an action that depends on an output of subsequent actions.
+SDL uses this DAG to optimize execution of your pipeline as it knows in which order the pipeline needs to execute.
 
-**Congratulations!**
-You successfully recreated the conf-file that is contained in the Docker Image, that you ran in the first step.
-If you look at [the docker command on the first step](setup.md), you will notice that there was no path specified for the conf-file.
-Per default, SDL looks for the config under *src/main/resources*, which is also part of the Docker Image that you created.
+What you see in the logs, is a representation of what the SDL has determined as dependencies.
+If you don't get the results you expect, it's good to check if the DAG looks correct.
+At the end you will also see the graph again with status indicators (SUCCEEDED, CANCELLED, ...) and the duration it took to execute the action.
+
+:::tip Hold on
+It's worth pausing at this point to appreciate this fact:  
+You didn't have to explicitly tell SDL how to execute your actions.
+You also didn't have to define the dependencies between your actions. 
+Just from the definitions of DataObjects and Actions alone, SDL builds a DAG and knows what needs to be executed and how.
+:::
+
+**Congratulations!**  
+You successfully recreated the configuration file that is contained in the Docker Image, you ran in the first step.
+If you look at [the docker command on the first step](setup.md), you will notice that there was no path specified for the configuration file.
+By default, SDL looks for the config under *src/main/resources*, which is also part of the Docker Image that you created.
 
 
 ## Coming Next in Part 2
