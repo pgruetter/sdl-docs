@@ -93,7 +93,20 @@ This time, we add another volume with your config-file and tell the SDL to use i
 After executing it, you will see the file *data/ext_departures/result.json* has been replaced with the output of your pipeline.
 :::info
 Since both web-servers are freely available on the internet, they might restrict your traffic if you try to download the same file over and over again.
+
 :::
+
+In case you run into issues when executing your pipeline and you want to terminate the process
+you can use this docker command to list the running containers:
+
+    docker ps
+
+While your feed-execution is running, it will contain
+an execution with image name smart-data-lake/gs1:latest.
+Use the container id to stop the container by typing:
+    
+    docker containter stop <container id>
+
 
 **Congratulations!** You just executed your first feed! Now let's get our second input data source...
 

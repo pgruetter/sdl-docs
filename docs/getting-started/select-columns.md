@@ -30,7 +30,6 @@ Put this in the existing dataObjects section:
       }
 
 ## Define select-airport-cols action 
-### CopyAction with custom sqlCode
 
 Put this in the existing actions section:
 
@@ -57,22 +56,6 @@ This is due to a limitation in spark, which is used under the hood to execute th
 SDL works around this by replacing hyphens with underscores for you.
 
 :::
-
-### CopyAction with a column whitelist
-
-Actually, there is an even simpler way to select only a subset of the columns of a dataObject.
-The CopyAction has a option called columnWhitelist which allows you to do just that.
-So we can simplify our action by replacing it with the following code:
-
-      select-airport-cols {
-        type = CopyAction
-        inputId = stg-airports
-        outputId = int-airports
-        columnWhitelist=["ident", "name", "latitude_deg", "longitude_deg"]
-        metadata {
-          feed = compute
-        }
-      }
 
 There are numerous other options available, which you can view in the [API Docs](http://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/action/CopyAction.html).
 
@@ -123,8 +106,9 @@ which is out of the scope of this tutorial.
 
 
 
-## Break approach 1
+## Example of Common Mistake
 
+One common mistake is mixing up the types on dataObjects.
 To give you some experience on how to debug your config, you can also try out what happens if you change the type of *stg-airports* to JsonFileDataObject.
 You will get an error message that hints that there might be some format problem, but it is hard to spot :
 
