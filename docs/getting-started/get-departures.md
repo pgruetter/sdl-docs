@@ -34,12 +34,19 @@ Add the following lines to your configuration file:
       }
       stg-departures {
         type = JsonFileDataObject
-        path = stg-departures
+        path = {~id}
       }
     }
 
 Here, we first created the DataObjects section. This section will contain our DataObjects of our pipeline.
-Inside, we defined two DataObjects to start with:
+Inside, we defined two DataObjects to start with.
+
+:::info
+The names *ext-departures* and *stg-departures* are called DataObject-ID.
+They uniquely define the data object and we will frequently refer to these IDs as does SDL, i.e. in error messages..
+
+You will see further down, that actions also have a name that uniquely identifies them, they are called Action-ID.
+:::
 
 - ext-departures:  
 This data object acts as a source in our action and defines where we get our departure information from.
@@ -50,20 +57,12 @@ Each type of data object comes with its own set of parameters. For a WebserviceF
 - stg-departures:  
 This data object acts as a target for our first action, so where and how to download the file to.
 We set type to JsonFileDataObject (because we know from before that the webservice will return a json file) 
-and we set *path = stg-departures*
-which tells SDL to store the response into a directory with that name. 
+Path defines, where the file will be stored. Instead of writing *stg-departures* again,
+we used the placeholder *{~id}* which gets replaced by the DataObject-ID.
 You could choose any name you want, but most of the time, the name of your dataObject is a good fit.
 We defined a relative path - it is relative to the working directory SDL is started in.
 
-:::info
-The names *ext-departures* and *stg-departures* are called DataObject-ID.
-They uniquely define the data object and we will frequently refer to these IDs as does SDL, i.e. in error messages..
-
-You will see further down, that actions also have a name that uniquely identifies them, they are called Action-ID. 
-:::
-
-- TODO use {~id }^somewhere? dataObjectId?
-
+#### Naming Conventions
 A quick note on our naming conventions: We typically follow some conventions when naming our data objects and actions.
 It follows the layering conventions of our structured Smart Data Lake:
 - External data objects are prefixed with "ext"
