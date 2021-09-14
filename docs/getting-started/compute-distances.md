@@ -57,7 +57,7 @@ but this would have required more to write since it requires lists of inputs, ou
 
 You can execute the usual *docker run* command :
 
-    docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config demo:latest -c /mnt/config --feed-sel .*
+    docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config demo:latest -c /mnt/config --feed-sel compute
 
 Under *data/btl-distances* you can now see the final result. 
 
