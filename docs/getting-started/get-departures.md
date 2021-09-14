@@ -21,7 +21,7 @@ An action defines how one (or multiple) DataObject are copied or transformed int
 In every data pipeline, you will have at least one *DataObject* for your input and one for your output.
 If you have more than one action, you will also have at least one *DataObject* for each intermediary step between two actions.
 
-In our case, in order to get our departure data, we are going to build one action. Hence, we need one dataObject for our input, and one for our output.
+In our case, in order to get our departure data, we are going to build one action. Hence, we need one DataObject for our input, and one for our output.
 Create a directory called config in your current working directory and an empty file called application.conf. This is where we will define our data pipeline.
 
 ## Define departures objects
@@ -56,11 +56,14 @@ Each type of data object comes with its own set of parameters. For a WebserviceF
 
 - stg-departures:  
 This data object acts as a target for our first action, so where and how to download the file to.
-We set type to JsonFileDataObject (because we know from before that the webservice will return a json file) 
+We set type to JsonFileDataObject because we know from before that the webservice will return a json file.
 Path defines, where the file will be stored. Instead of writing *stg-departures* again,
 we used the placeholder *{~id}* which gets replaced by the DataObject-ID.
 You could choose any name you want, but most of the time, the name of your dataObject is a good fit.
-We defined a relative path - it is relative to the working directory SDL is started in.
+We defined a relative path - it is relative to the working directory SDL is started in. 
+The working directory has been set to the *data* directory in the Dockerfile by setting the JVM Property 
+      -Duser.dir=/mnt/data, 
+so that's why all your relative paths will start in the *data* directory.
 
 #### Naming Conventions
 A quick note on our naming conventions: We typically follow some conventions when naming our data objects and actions.
