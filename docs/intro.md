@@ -5,7 +5,7 @@ sidebar_label: Introduction
 slug: /
 ---
 
-Smart Data Lake Builder is a data lake automation framework that makes loading and transforming data a breeze.
+Smart Data Lake Builder (SDL for short) is a data lake automation framework that makes loading and transforming data a breeze.
 It is implemented in Scala and builds on top of open-source big data technologies like [Apache Hadoop](https://hadoop.apache.org/) and [Apache Spark](https://spark.apache.org/), including connectors for diverse data sources (HadoopFS, Hive, DeltaLake, JDBC, Splunk,  Webservice, SFTP, JMS, Excel, Access) and file formats.
 
 ### A Data Lake
@@ -58,7 +58,7 @@ All metadata i.e. connections, data objects and actions are defined in a central
 The file format used is [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) which makes it easy to edit.
 
 ### Getting Started
-To see how all this works in action, head over to the (docs/GettingStarted.md) page.
+To see how all this works in action, head over to the [Getting Started Guide](getting-started/setup.md) page.
 
 # Major Contributors
 ![SBB](images/SBB_logo.png)  
