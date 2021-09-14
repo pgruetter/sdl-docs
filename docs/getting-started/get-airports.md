@@ -14,21 +14,19 @@ You are welcome to try to implement it yourself before continuing.
 Just as in the previous step, you can use "download" as feed name.
 
 ## Solution
-You should now have a file similar to [this](config-examples//application-download-part1.conf) one.
+You should now have a file similar to [this](config-examples/application-download-part1.conf) one.
 The only notable difference is that you had to use the type **CsvFileDataObject** for the airports.csv file,
 since this is what the second webservice answers with. 
-Note, that you would not get an error at this point if you had chosen another file format. 
+Note that you would not get an error at this point if you had chosen another file format. 
 Since we use *FileTransferAction* in both cases, the files are copied without the content being interpreted yet.
 
 You can start the same *docker run* command as before and you should see that both directories
 *stg-airports* and *stg-departures* have new files now.
 Notice that since both actions have the same feed, the option *--feed-sel download* executes both of them.
 
-TODO: Explain DAG at this point?
-
 ## Mess Up the Solution
 Now let's see what happens when things don't go as planned. 
-For that, replace your config file with the contents of [this](config-examples//application-download-part1-errors.conf) file.
+For that, replace your config file with the contents of [this](config-examples/application-download-part1-errors.conf) file.
 When you start the *docker run* command again, you will see two errors:
 
 1. The name of the DataObject "NOPEext-departures" does not match with the inputId of the action download-departures.
@@ -44,9 +42,9 @@ As noted before, SDL will often use Action-IDs and DataObject-IDs to communicate
 
     Exception in thread "main" io.smartdatalake.config.ConfigurationException: (DataObject~stg-airports) ClassNotFoundException: io.smartdatalake.workflow.dataobject.UnicornFileDataObject
 
-Internally, the types you chose are represented by Scala Classes.
+Internally, the types you choose are represented by Scala Classes.
 These classes define all characteristics of a DataObject and all it's parameters, i.e. the url we defined in our WebserviceFileDataObject.
-This also explains, why you get a *ClassNotFoundException* in this case.
+This also explains why you get a *ClassNotFoundException* in this case.
 
 ## Try fixing it
 
@@ -69,7 +67,7 @@ validate superfluous attributes, missing mandatory attributes, attribute content
 validate preconditions, e.g. connections and existence of tables and directories.
 3. *Init* phase  
 executes the whole feed *without any data* to spot incompatibilities between the Data Objects that cannot be spotted
-   by just looking at the config file. For example a column which doesn't exist but is referenced in a later Action will fail the init phase.
+   by just looking at the config file. For example a column which doesn't exist but is referenced in a later Action will cause the init phase to fail.
 4. *Exec* phase  
 only if all previous phases have been passed successfully, execution is started.
 

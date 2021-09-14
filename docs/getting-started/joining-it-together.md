@@ -5,7 +5,7 @@ title: Joining It Together
 ## Goal
 So now we have data from departures in our stage layer, and we have cleaned data for airports in our integration layer.
 In this step we will finally join both data sources together.
-We will continue based on the config file available [here](config-examples//application-compute-part1-cols.conf).
+We will continue based on the config file available [here](config-examples/application-compute-part1-cols.conf).
 At the end of the step, we will have all planes departing from Bern Airport
 in the given timeframe along with their readable destination airport names, as well as geo-coordinates.
 

@@ -34,7 +34,7 @@ Add the following lines to your configuration file:
       }
       stg-departures {
         type = JsonFileDataObject
-        path = {~id}
+        path = "{~id}"
       }
     }
 
@@ -57,17 +57,19 @@ Each type of data object comes with its own set of parameters. For a WebserviceF
 - stg-departures:  
 This data object acts as a target for our first action, so where and how to download the file to.
 We set type to JsonFileDataObject because we know from before that the webservice will return a json file.
-Path defines, where the file will be stored. Instead of writing *stg-departures* again,
-we used the placeholder *{~id}* which gets replaced by the DataObject-ID.
-You could choose any name you want, but most of the time, the name of your dataObject is a good fit.
+Path defines where the file will be stored. You could choose any name you want, but most of the time, the name of your DataObject is a good fit.
+Instead of writing *stg-departures* again,
+we used the placeholder *{~id}* which gets replaced by the DataObject-ID. Don't forget to surround that placeholder
+with double quotes so that it is interpreted as a string.
 We defined a relative path - it is relative to the working directory SDL is started in. 
 The working directory has been set to the *data* directory in the Dockerfile by setting the JVM Property 
-      -Duser.dir=/mnt/data, 
+
+    -Duser.dir=/mnt/data
 so that's why all your relative paths will start in the *data* directory.
 
 #### Naming Conventions
 A quick note on our naming conventions: We typically follow some conventions when naming our data objects and actions.
-It follows the layering conventions of our structured Smart Data Lake:
+They follow the layering conventions of our structured Smart Data Lake:
 - External data objects are prefixed with "ext"
 - Your first action typically copies the data into the Data Lake, without making any changes. 
 This layer is called the *Staging Layer*.
@@ -80,7 +82,7 @@ DataObjects of the Business Transformation Layer are prefixed with "btl".
 
 You are of course free to use any other naming conventions, but it's worth to think about one at the beginning of your project.
 
-In our case, we simply copy data exactly as is from an external source. Hence, our output dataObject belongs to the Staging Layer.
+In our case, we simply copy data exactly as is from an external source. Hence, our output DataObject belongs to the Staging Layer.
 
 ## Define download-ext-departures
 After the dataObjects section, add the following lines to your configuration file:
@@ -126,8 +128,9 @@ This time, we add another volume with your config-file and tell SDL to use it wi
 
 After executing it, you will see the file *data/stg_departures/result.json* has been replaced with the output of your pipeline.
 
-:::info
+:::caution
 Since both web servers are freely available on the internet, they might restrict your traffic if you try to download the same file over and over again.
+If the download fails because of a timeout, wait a couple of minutes and try again.
 :::
 
 In case you run into issues when executing your pipeline and you want to terminate the process

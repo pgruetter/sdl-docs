@@ -5,7 +5,7 @@ title: Select Columns
 ## Goal
 
 In this step we write our first Action that modifies data.
-We will continue based upon the config file available [here](config-examples//application-download-part1.conf).
+We will continue based upon the config file available [here](config-examples/application-download-part1.conf).
 When you look at the data in the folder *data/stg-airports/result.csv*, you will notice that we
 don't need most of the columns. In this step, we will write a simple *CopyAction* that selects only the columns we
 are interested in.
@@ -54,8 +54,8 @@ There's different ways to define transformations, in this case we defined it thr
 
 :::caution
 
-Notice that we call our input DataObject stg-airports with a hyphen "-", but in the sql, we call it "stg\_airports" with an underscore "_".
-This is due to SQL standard not allowing "-" in unquoted identifiers (e.g. table names). 
+Notice that we call our input DataObject stg-airports with a hyphen "-", but in the sql, we call it "stg\_airports" with an underscore "\_".
+This is due to the SQL standard not allowing "-" in unquoted identifiers (e.g. table names). 
 Under the hood, Apache Spark SQL is used to execute the query, which implements SQL standard.
 SDL works around this by replacing special chars in DataObject names used in SQL statements for you. 
 In this case, it automatically replaced "-" with "_"
@@ -87,6 +87,8 @@ For instance if you only want to execute the action that we just wrote, you can 
 
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel ids:select-airport-cols
 
+Of course, at this stage, the feed *compute* only contains this one action, so the result will be the same.
+
 SDL also allows you to use combinations of expressions to select the actions you want to execute. You can run
 
     docker run --rm smart-data-lake/gs1:latest --help
@@ -105,7 +107,7 @@ This is because in the first step, we download files of which SDL doesn't know t
 The init-phase will require that for all Data Objects, the schema is known so that it can check for inconsistencies.
 When we already have some files, it will infer the schema based on the files.
 One way to prevent this problem is to explicitly provide the schema for the JSON and for the CSV-File, 
-which is out of the scope of this part of the tutorial.
+which is out of the scope for this part of the tutorial.
 
 :::
 
@@ -113,7 +115,7 @@ which is out of the scope of this part of the tutorial.
 
 ## Example of Common Mistake
 
-One common mistake is mixing up the types on Data Objects.
+One common mistake is mixing up the types of Data Objects.
 To give you some experience on how to debug your config, you can also try out what happens if you change the type of *stg-airports* to JsonFileDataObject.
 You will get an error message which indicates that there might be some format problem, but it is hard to spot :
 
@@ -124,4 +126,24 @@ Then Spark tries to parse the CSV-records in the \*.json file with a JSON-Parser
 However, it generates a column named *_corrupt_record* describing what went wrong. 
 If you know Apache Spark, this column will look very familiar to you.
 After that, the query fails, because it only finds that column with error messages instead of the actual data.
+
+One way to get a better error message is to tell spark that it should promptly fail when reading a corrupt file.
+You can do that with the option [jsonOptions](https://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/dataobject/JsonFileDataObject.html),
+which allows you to directly pass on settings to Spark.
+
+In our case, we would end up with a faulty dataObject that looks like this:
+
+      stg-airports {
+        type = JsonFileDataObject
+        path = "~{id}"
+        jsonOptions {
+          "mode"="failfast"
+        }
+      }
+
+This time, it will fail with this error message:
+
+    Exception in thread "main" io.smartdatalake.workflow.TaskFailedException: Task select-airport-cols failed. 
+    Root cause is 'SparkException: Malformed records are detected in schema inference. 
+    Parse Mode: FAILFAST. Reasons: Failed to infer a common schema. Struct types are expected, but `string` was found.'
 
