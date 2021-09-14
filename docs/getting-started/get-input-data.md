@@ -5,7 +5,7 @@ title: Inputs
 ## Goal
 
 Let's say your friend Tom is a fan of railways and he lives next to an airport.
-He wonders how many of these flights that start from his neighborhood could be replaced by rail traffic.
+He wonders how many flights that start from his neighborhood could be replaced by rail traffic.
 
 You just discovered this tool called Smart Data Lake Builder that's supposedly good for combining data from different sources and performing some analysis on it.
 So you decide to help Tom by trying that framework.
@@ -13,7 +13,7 @@ So you decide to help Tom by trying that framework.
 
 ## Our Input Data
 Our first step is to get the input data.
-After browsing the web a bit, you end up finding a website that look promising.
+After browsing the web a bit, you end up finding a website that looks promising.
 
 ### departures
 
@@ -38,7 +38,7 @@ the folder *data/ext_departures/result.json*.
 ### airports.csv
 Now you need some kind of list of all airports with their respective locations.
 You end up finding a [website](https://ourairports.com/data/) that has just that!
-It hosts a csv-File called airports.csv which has what you need.
+It hosts a csv-file called *airports.csv* which contains what you need.
 
 :::info
 Notice that this CSV-File is exactly what was downloaded in the previous step into

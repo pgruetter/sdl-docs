@@ -7,21 +7,23 @@ title: Select Columns
 In this step we write our first Action that modifies data.
 We will continue based upon the config file available [here](application-download-part1.conf).
 When you look at the data in the folder *data/stg-airports/result.csv*, you will notice that we
-don't need most of the columns. In this step, we will write a simple CopyAction that selects only the columns we
+don't need most of the columns. In this step, we will write a simple *CopyAction* that selects only the columns we
 are interested in.
 
-As usual, we need to define an output DataObject and an action. We don't need to define a new input DataObject as
-we will wire our new action to the existing DataObject *stg-airports* 
+As usual, we need to define an output DataObject and an action. 
+We don't need to define a new input DataObject as we will wire our new action to the existing DataObject *stg-airports*. 
 
 ## Define output object
 
-Let's use CsvFileDataObject again. There are numerous other possibilities, such as HiveTableDataObject, SplunkDataObject...
+Let's use CsvFileDataObject again because that makes it easy for us to check the result.
+In more advanced (speak: real-life) scenarios, we would use one of numerous other possibilities, 
+such as HiveTableDataObject, SplunkDataObject...
 See [this list](https://github.com/smart-data-lake/smart-data-lake/blob/develop-spark3/docs/Reference.md#data-objects) for an overview.
 You can also consult the [API docs](https://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/dataobject/index.html) to see how to use all those Data Objects.
-We use CsvFileDataObjects in this part of the tutorial for simplicity.
 
-To build our Integration Layer of airport data we are performing a simple Action without any hardcore business logic involved.
-Therefore, let's use int-airports as the name of the object.
+In a first step, we want to make the airport data more understandable by removing any columns we don't need. 
+Since we don't introduce any business logic into the transformation, 
+the resulting data object will reside in the integration layer and thus will be called *int-airports*.
 Put this in the existing dataObjects section:
 
       int-airports {
@@ -31,7 +33,7 @@ Put this in the existing dataObjects section:
 
 ## Define select-airport-cols action 
 
-Put this in the existing actions section:
+Next, add these lines in the existing actions section:
 
       select-airport-cols {
         type = CopyAction
@@ -43,18 +45,20 @@ Put this in the existing actions section:
         }
       }
 
-We just defined a new action called select-airport-cols. We wired it together with the two DataObjects
-stg-airports and int-airports.
-We used a new type of Action: CopyAction. This action is intended to copy the data from one format to another,
-where one transformation of the data can be done along the way.
-We defined our transformation with the sqlCode *"select ident, name, latitude_deg, longitude_deg from stg_airports"*
+We just defined a new action called *select-airport-cols*. 
+We wired it together with the two DataObjects *stg-airports* and *int-airports*.
+A new type of Action was used: CopyAction. This action is intended to copy data from one data object to another
+with an optional transformation of the data along the way.
+There's different ways to define transformations, in this case we defined it through a sqlCode 
+*"select ident, name, latitude_deg, longitude_deg from stg_airports"*
 
 :::caution
 
 Notice that we call our input DataObject stg-airports with a hyphen "-", but in the sql, we call it "stg\_airports" with an underscore "_".
-This is due to SQL standard not allowing "-" in unquoted identifiers (e.g. table names). Under the hood Apache Spark SQL is used to execute the query, which implements SQL standard.
-SDL works around this by replacing special chars in DataObject names used in SQL statements for you. In this case, it automatically replaced
-"-" with "_"
+This is due to SQL standard not allowing "-" in unquoted identifiers (e.g. table names). 
+Under the hood, Apache Spark SQL is used to execute the query, which implements SQL standard.
+SDL works around this by replacing special chars in DataObject names used in SQL statements for you. 
+In this case, it automatically replaced "-" with "_"
 
 :::
 
@@ -63,8 +67,8 @@ There are numerous other options available, which you can view in the [API Docs]
 
 
 ## Try it out
-Note that we used a different feed this time that we called *compute*. 
-We will keep expanding the feed *compute* from now on.
+Note that we used a different feed this time, we called it *compute*. 
+We will keep expanding the feed *compute* in the next few steps.
 This allows us to keep the data we downloaded in the previous steps in our local files and just
 try out our new actions.
 
@@ -97,9 +101,9 @@ In our case, we can run the entire data pipeline with the following command :
 :::caution
 
 In our tutorial, this command will only work if you already have some files under *data/stg-airports* and data/stg-departures.
-This is because in the first step, we download files of which we SDL doesn't know the schema in advance.
-The init-phase will require that for all Data Objects, the schema is known so that it can check for incompatibilities.
-When we already have some files, it will infer the schema based upon the files.
+This is because in the first step, we download files of which SDL doesn't know the schema of in advance.
+The init-phase will require that for all Data Objects, the schema is known so that it can check for inconsistencies.
+When we already have some files, it will infer the schema based on the files.
 One way to prevent this problem is to explicitly provide the schema for the JSON and for the CSV-File, 
 which is out of the scope of this part of the tutorial.
 
@@ -115,8 +119,9 @@ You will get an error message which indicates that there might be some format pr
 
      Error: cannot resolve '`ident`' given input columns: [stg_airports._corrupt_record]; line 1 pos 7;
 
-The FileTransferAction will save the result from the Webservice with the JsonFileDataObject as file with filetype *.json. 
-Then Spark tries to parse the CSV-records in the *.json file with a JSON-Parser. It is unable to properly read the data.
-However, it generates a column named *_corrupt_record* describing what went wrong.
+The FileTransferAction will save the result from the Webservice with the JsonFileDataObject as file with filetype \*.json. 
+Then Spark tries to parse the CSV-records in the \*.json file with a JSON-Parser. It is unable to properly read the data.
+However, it generates a column named *_corrupt_record* describing what went wrong. 
+If you know Apache Spark, this column will look very familiar to you.
 After that, the query fails, because it only finds that column with error messages instead of the actual data.
 
