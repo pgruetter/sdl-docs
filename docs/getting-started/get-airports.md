@@ -14,7 +14,7 @@ You are welcome to try to implement it yourself before continuing.
 Just as in the previous step, you can use "download" as feed name.
 
 ## Solution
-You should now have a file similar to [this](application-download-part1.conf) one.
+You should now have a file similar to [this](config-examples//application-download-part1.conf) one.
 The only notable difference is that you had to use the type **CsvFileDataObject** for the airports.csv file,
 since this is what the second webservice answers with. 
 Note, that you would not get an error at this point if you had chosen another file format. 
@@ -28,7 +28,7 @@ TODO: Explain DAG at this point?
 
 ## Mess Up the Solution
 Now let's see what happens when things don't go as planned. 
-For that, replace your config file with the contents of [this](application-download-part1-errors.conf) file.
+For that, replace your config file with the contents of [this](config-examples//application-download-part1-errors.conf) file.
 When you start the *docker run* command again, you will see two errors:
 
 1. The name of the DataObject "NOPEext-departures" does not match with the inputId of the action download-departures.
