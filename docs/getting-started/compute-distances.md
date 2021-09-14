@@ -23,7 +23,7 @@ How do we compute the distances ?
 The answer is in the file *src/main/scala/com/sample/ComputeDistanceTransformer.scala*.
 
 So far, we only used SQL transformers. 
-But more complex transformations can be written in custom code and reference it in the config.
+But more complex transformations can be written in custom code and referenced in the config.
 This gives you great flexibility for cases with specific business logic, such as this one.
 
 We have one input and one output: therefore our custom class is a *CustomDfTransformer* (instead of CustomDf**s**Transformer).
@@ -46,7 +46,6 @@ In order to wire this CustomTransformation into our config, we add the following
         inputId = btl-departures-arrivals-airports
         outputId = btl-distances
         transformer.class-name = com.sample.ComputeDistanceTransformer
-    
         metadata {
           feed = compute
         }
