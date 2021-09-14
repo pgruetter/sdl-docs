@@ -48,7 +48,7 @@ We added a second transformer of the type SQLDfsTransformer.
 It's SQL Code references the result of the first transformer: *btl-connected-airports* (remember the underscores, so *btl_connected_airports* in SparkSQL).
 SDL will execute these transformations in the order you defined them, which allows you to chain them together, like we have done.
 
-In the second SQL-Code, we join the result of the first SQL again with int_airports, but this time using estdepartureairport as key
+In the second SQL-Code, we join the result of the first SQL again with int_airports, but this time using *estdepartureairport* as key
 to get the name and coordinates of the departures airport, Bern Airport.
 We also renamed these columns so that they are distinguishable from the names and coordinates of the arrival airports.
 Finally, we put the result into a DataObject called *btl-departures-arrivals-airports*.
@@ -74,5 +74,5 @@ Another difference is that you cannot run an individual transformation alone, yo
 
 When running the example, you should see a CSV file with departure and arrival airport names and coordinates.
 
-Great! Now we have all the data we need in one place. Only thing left to do is to compute the distance
+Great! Now we have all the data we need in one place. The only thing left to do is to compute the distance
 between departure and arrival coordinates. Let's do that in the final step of part 1.

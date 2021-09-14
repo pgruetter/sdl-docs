@@ -31,6 +31,7 @@ Add the following lines to your configuration file:
       ext-departures {
         type = WebserviceFileDataObject
         url = "https://opensky-network.org/api/flights/departure?airport=LSZB&begin=1630200800&end=1630310979"
+        readTimeoutMs=200000
       }
       stg-departures {
         type = JsonFileDataObject
@@ -53,6 +54,7 @@ This data object acts as a source in our action and defines where we get our dep
 We set its type to WebserviceFileDataObject to tell SDL that this is a webservice call returning a file.
 SDL comes with a broad set of predefined data object types and can easily be extended. More on that later.
 Each type of data object comes with its own set of parameters. For a WebserviceFileDataObject, the only mandatory one is the url, so we set that as well.
+We also set the option readTimeoutMs to a couple of seconds because the Rest-Service can be slow to respond.
 
 - stg-departures:  
 This data object acts as a target for our first action, so where and how to download the file to.
@@ -129,8 +131,8 @@ This time, we add another volume with your config-file and tell SDL to use it wi
 After executing it, you will see the file *data/stg_departures/result.json* has been replaced with the output of your pipeline.
 
 :::caution
-Since both web servers are freely available on the internet, they might restrict your traffic if you try to download the same file over and over again.
-If the download fails because of a timeout, wait a couple of minutes and try again.
+Since both web servers are freely available on the internet, they might be overloaded by traffic.
+If the download fails because of a timeout, either increase *readTimeoutMs* or wait a couple of minutes and try again.
 :::
 
 In case you run into issues when executing your pipeline and you want to terminate the process

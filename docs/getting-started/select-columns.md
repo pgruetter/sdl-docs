@@ -106,6 +106,10 @@ In our tutorial, this command will only work if you already have some files unde
 This is because in the first step, we download files of which SDL doesn't know the schema of in advance.
 The init-phase will require that for all Data Objects, the schema is known so that it can check for inconsistencies.
 When we already have some files, it will infer the schema based on the files.
+
+To work around this, execute the feed download again. After that feed was successfully executed, the execution of 
+the feed .* will work. 
+
 One way to prevent this problem is to explicitly provide the schema for the JSON and for the CSV-File, 
 which is out of the scope for this part of the tutorial.
 
@@ -127,7 +131,7 @@ However, it generates a column named *_corrupt_record* describing what went wron
 If you know Apache Spark, this column will look very familiar to you.
 After that, the query fails, because it only finds that column with error messages instead of the actual data.
 
-One way to get a better error message is to tell spark that it should promptly fail when reading a corrupt file.
+One way to get a better error message is to tell Spark that it should promptly fail when reading a corrupt file.
 You can do that with the option [jsonOptions](https://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/dataobject/JsonFileDataObject.html),
 which allows you to directly pass on settings to Spark.
 
