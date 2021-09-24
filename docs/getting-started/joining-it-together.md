@@ -15,12 +15,12 @@ Like in the previous step, we need one more action and one DataObject for our ou
 
       btl-connected-airports {
         type = CsvFileDataObject
-        path = btl-connected-airports
+        path = "~{id}"
       }
 
 ## Define join_departures_airports action
 
-      join_departures_airports {
+      join-departures-airports {
         type = CustomSparkAction
         inputIds = [stg-departures, int-airports]
         outputIds = [btl-connected-airports]
@@ -43,12 +43,11 @@ Now it gets interesting, a couple of things to note here:
 Use CustomSparkAction when you need to do complex operations. For instance, CustomSparkAction allows multiple inputs,
 which CopyAction does not.
 - Our input/output fields are now called inputId**s** and outputId**s** and they take a list of DataObject ids.
-- Instead of allowing for just one transformer, we could potentially have multiple transformers within the same action that
-get executed on after the other. 
-We don't use that for now and just add one transformer of type SQLDf**s**Transformer.
-Again, the **s** is important, since it shows that multiple inputs/output Data Objects are possible.
-We could also define a SQLDfTransformer that only knows one input and one output.
-- Finally, the CustomSparkAction expects it's code as an object rather than as a string. This is due to the fact that you could have multiple
+Similarly, our transformer is now of type SQLDf**s**Transformer.
+Again, the **s** is important, since it shows that multiple inputs/output Data Objects are possible, which is what we need in this step.
+In the prevous step, we defined a SQLDfTransformer because we only needed one input.
+- Finally, the *SQLDfsTransformer* expects it's code as a HOCON object rather than as a string. 
+This is due to the fact that you could have multiple
 outputs, in which case you would need to name them in order to distinguish them.
 In our case, there is only one output DataObject: *btl-connected-airports*.
 The SQL-Code itself is just a join between the two input Data Objects on the ICAO identifier.

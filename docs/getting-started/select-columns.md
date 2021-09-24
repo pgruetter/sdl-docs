@@ -28,7 +28,7 @@ Put this in the existing dataObjects section:
 
       int-airports {
         type = CsvFileDataObject
-        path = int-airports
+        path = "~{id}"
       }
 
 ## Define select-airport-cols action 
@@ -39,18 +39,27 @@ Next, add these lines in the existing actions section:
         type = CopyAction
         inputId = stg-airports
         outputId = int-airports
-        transformer.sqlCode = "select ident, name, latitude_deg, longitude_deg from stg_airports"
+        transformers = [{
+            type = SQLDfTransformer
+            code = "select ident, name, latitude_deg, longitude_deg from stg_airports"
+        }]
         metadata {
           feed = compute
         }
       }
+A couple of things to note here:
 
-We just defined a new action called *select-airport-cols*. 
-We wired it together with the two DataObjects *stg-airports* and *int-airports*.
-A new type of Action was used: CopyAction. This action is intended to copy data from one data object to another
-with an optional transformation of the data along the way.
-There's different ways to define transformations, in this case we defined it through a sqlCode 
-*"select ident, name, latitude_deg, longitude_deg from stg_airports"*
+- We just defined a new action called *select-airport-cols*. 
+- We wired it together with the two DataObjects *stg-airports* and *int-airports*.
+- A new type of Action was used: CopyAction. This action is intended to copy data from one data object to another
+with some optional transformations of the data along the way.
+- To define the transformations of an action, you define a list of HOCON Objects.
+HOCON-Objects are just like JSON-Objects (with a few added features, but more on that later).
+- Instead of allowing for just one transformer, we could potentially have multiple transformers within the same action that
+  get executed one after the other. That's why we have the bracket followed by the curly brace "[{" :
+  the CustomSparkAction expects it's field *transformers* to be a list of Objects.
+- There's different kinds of transformers, in this case we defined a *SQLDfTransformer* and provided it with a custom SQL-Code.
+There are other transformer types such as *ScalaCodeDfTransformer*, *PythonCodeDfTransformer*... More on that later.
 
 :::caution
 
@@ -62,7 +71,7 @@ In this case, it automatically replaced "-" with "_"
 
 :::
 
-There are numerous other options available, which you can view in the [API Docs](http://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/action/CopyAction.html).
+There are numerous other options available for the CopyAction, which you can view in the [API Docs](http://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/workflow/action/CopyAction.html).
 
 
 
@@ -93,7 +102,47 @@ SDL also allows you to use combinations of expressions to select the actions you
 
     docker run --rm smart-data-lake/gs1:latest --help
 
-to see all options that are available.
+to see all options that are available. For your convenience, here is the current output of the help command:
+
+    Usage: LocalSmartDataLakeBuilder [options]
+    
+      -f, --feed-sel <value>   Select actions to execute by one or multiple expressions separated by semicolon (;). Results from multiple expressions are combined from left to right.
+                               Expression syntax: "<operation?><prefix:?><regex>"
+                               Operations:
+                               - pipe symbol (|): the two sets are combined by union operation (default)
+                               - ampersand symbol (&): the two sets are combined by intersection operation
+                               - minus symbol (-): the second set is subtracted from the first set
+                               Prefixes:
+                               - 'feeds': select actions where metadata.feed is matched by regex pattern (default)
+                               - 'names': select actions where metadata.name is matched by regex pattern
+                               - 'ids': select actions where id is matched by regex pattern
+                               - 'layers': select actions where metadata.layer of all output DataObjects is matched by regex pattern
+                               - 'startFromActionIds': select actions which with id is matched by regex pattern and any dependent action (=successors)
+                               - 'endWithActionIds': select actions which with id is matched by regex pattern and their predecessors
+                               - 'startFromDataObjectIds': select actions which have an input DataObject with id is matched by regex pattern and any dependent action (=successors)
+                               - 'endWithDataObjectIds': select actions which have an output DataObject with id is matched by regex pattern and their predecessors
+                               All matching is done case-insensitive.
+                               Example: to filter action 'A' and its successors but only in layer L1 and L2, use the following pattern: "startFromActionIds:a;&layers:(l1|l2)"
+      -n, --name <value>       Optional name of the application. If not specified feed-sel is used.
+      -c, --config <value>     One or multiple configuration files or directories containing configuration files, separated by comma. Entries must be valid Hadoop URIs or a special URI with scheme "cp" which is treated as classpath entr
+    y.
+      --partition-values <value>
+                               Partition values to process in format <partitionColName>=<partitionValue>[,<partitionValue>,...].
+      --multi-partition-values <value>
+                               Multi partition values to process in format <partitionColName1>=<partitionValue>,<partitionColName2>=<partitionValue>[;(<partitionColName1>=<partitionValue>,<partitionColName2>=<partitionValue>;...].
+      --parallelism <value>    Parallelism for DAG run.
+      --state-path <value>     Path to save run state files. Must be set to enable recovery in case of failures.
+      --override-jars <value>  Comma separated list of jars for child-first class loader. The jars must be present in classpath.
+      --test <value>           Run in test mode: config -> validate configuration, dry-run -> execute prepare- and init-phase only to check environment and spark lineage
+      --help                   Display the help text.
+      --version                Display version information.
+      -m, --master <value>     The Spark master URL passed to SparkContext (default=local[*], yarn, spark://HOST:PORT, mesos://HOST:PORT, k8s://HOST:PORT).
+      -x, --deploy-mode <value>
+                               The Spark deploy mode passed to SparkContext (default=client, cluster).
+      -d, --kerberos-domain <value>
+                               Kerberos-Domain for authentication (USERNAME@KERBEROS-DOMAIN) in local mode.
+      -u, --username <value>   Kerberos username for authentication (USERNAME@KERBEROS-DOMAIN) in local mode.
+
 
 One popular option is to use regular expressions to execute multiple feeds together.
 In our case, we can run the entire data pipeline with the following command : 
