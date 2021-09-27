@@ -45,7 +45,7 @@ which CopyAction does not.
 - Our input/output fields are now called inputId**s** and outputId**s** and they take a list of DataObject ids.
 Similarly, our transformer is now of type SQLDf**s**Transformer.
 Again, the **s** is important, since it shows that multiple inputs/output Data Objects are possible, which is what we need in this step.
-In the prevous step, we defined a SQLDfTransformer because we only needed one input.
+In the previous step, we defined a SQLDfTransformer because we only needed one input.
 - Finally, the *SQLDfsTransformer* expects it's code as a HOCON object rather than as a string. 
 This is due to the fact that you could have multiple
 outputs, in which case you would need to name them in order to distinguish them.

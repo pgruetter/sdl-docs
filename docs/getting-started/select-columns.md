@@ -57,7 +57,7 @@ with some optional transformations of the data along the way.
 HOCON-Objects are just like JSON-Objects (with a few added features, but more on that later).
 - Instead of allowing for just one transformer, we could potentially have multiple transformers within the same action that
   get executed one after the other. That's why we have the bracket followed by the curly brace "[{" :
-  the CustomSparkAction expects it's field *transformers* to be a list of Objects.
+  the CustomSparkAction expects it's field *transformers* to be a list of HOCON Objects.
 - There's different kinds of transformers, in this case we defined a *SQLDfTransformer* and provided it with a custom SQL-Code.
 There are other transformer types such as *ScalaCodeDfTransformer*, *PythonCodeDfTransformer*... More on that later.
 
