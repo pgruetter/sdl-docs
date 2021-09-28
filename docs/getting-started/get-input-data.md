@@ -6,6 +6,8 @@ title: Inputs
 
 Let's say your friend Tom is a fan of railways and he lives next to an airport.
 He wonders how many flights that start from his neighborhood could be replaced by rail traffic.
+For that he would need to find out which flights depart from his airport, as well as how far they are flying.
+If they fly less than, say 500 km, then that would be a journey that could be done by rail.
 
 You just discovered this tool called Smart Data Lake Builder that's supposedly good for combining data from different sources and performing some analysis on it.
 So you decide to help Tom by trying that framework.

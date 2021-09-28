@@ -14,7 +14,7 @@ We'll do it in a generic way by adding another transformer into the action *join
 
 Let's start in an unusual way by first changing the action. You'll see why shortly.
 
-      join_departures_airports {
+      join-departures-airports {
         type = CustomSparkAction
         inputIds = [stg-departures, int-airports]
         outputIds = [btl-departures-arrivals-airports]
@@ -59,7 +59,7 @@ Let's add the new DataObject, as usual:
 
       btl-departures-arrivals-airports {
         type = CsvFileDataObject
-        path = btl-departures-arrivals-airports
+        path = "~{id}"
       }
 
 Now we can simply delete the DataObject btl-connected-airports, because it is now only a temporary result within an action.
