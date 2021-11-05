@@ -12,6 +12,9 @@ module.exports = {
           'getting-started/joining-it-together',
           'getting-started/joining-departures-and-arrivals',
           'getting-started/compute-distances'
+        ],
+        'Part 3': [
+          'getting-started/part-3/get-departures-webservice',
         ]
       }
 
