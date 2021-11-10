@@ -14,7 +14,7 @@ module.exports = {
           'getting-started/compute-distances'
         ],
         'Part 3': [
-          'getting-started/part-3/get-departures-webservice',
+          'getting-started/part-3/custom-webservice',
           'getting-started/part-3/incremental-mode',
         ]
       }
