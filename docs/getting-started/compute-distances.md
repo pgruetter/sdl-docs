@@ -13,7 +13,7 @@ Let's define our final output object for this part:
 
       btl-distances {
         type = CsvFileDataObject
-        path = btl-distances
+        path = "~{id}"
       }
 
 
@@ -41,11 +41,14 @@ It also adds a column *could_be_done_by_rail* to the output that simply checks i
 
 In order to wire this CustomTransformation into our config, we add the following action:
 
-      compute_distances {
+      compute-distances {
         type = CopyAction
         inputId = btl-departures-arrivals-airports
         outputId = btl-distances
-        transformer.class-name = com.sample.ComputeDistanceTransformer
+        transformers = [{
+          type = ScalaClassDfTransformer
+          className = com.sample.ComputeDistanceTransformer
+        }]
         metadata {
           feed = compute
         }
