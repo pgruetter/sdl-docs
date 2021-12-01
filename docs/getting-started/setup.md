@@ -5,11 +5,10 @@ title: Technical Setup
 
 ## Requirements
 
-To run this example you just need two things:
+To run this tutorial you just need two things:
 
-- [Docker](https://www.docker.com/get-started)
+- [Docker](https://www.docker.com/get-started), including docker-compose
 - The [source code of the example](https://github.com/smart-data-lake/getting-started).
-
 
 ## Build docker image
 
@@ -19,7 +18,6 @@ To run this example you just need two things:
 
 
     docker build -t smart-data-lake/gs1 .
-
 
 
 ## Run docker image

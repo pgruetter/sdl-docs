@@ -14,7 +14,9 @@ module.exports = {
           'getting-started/compute-distances'
         ],
         'Part 2': [
-            'getting-started/delta-lake-format'
+            'getting-started/industrializing',
+            'getting-started/delta-lake-format',
+            'getting-started/historical-data'
         ]
       }
 

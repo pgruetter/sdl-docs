@@ -35,7 +35,7 @@ In consequence
 
 There are other options like classical databases which always had a metadata layer, offer transactions but don't integrate with Hive metastore and cheap Hadoop file storage.
 Nevertheless, Smart Data Lake Builder supports classical databases through the JdbcTableDataObject.
-Fortunately there is a new technology called Delta Lake, see also [https://delta.io/](delta.io). It integrates in Hive metastore, supports transactions and stores Parquet files and a transaction log on hadoop filesystems.
+Fortunately there is a new technology called Delta Lake, see also [delta.io](https://delta.io/). It integrates in Hive metastore, supports transactions and stores Parquet files and a transaction log on hadoop filesystems.
 Smart Data Lake Builder supports this by the DeltaLakeTableDataObject, and this is what we are going to use for our airport and departure data now.
 
 ## DeltaLakeTableDataObject
@@ -85,14 +85,45 @@ Then you can execute the usual *docker run* command for all feeds:
 Checking our results gets more complicated now - we can't just open delta lake format in a text editor.
 But if we could use SQL to query our results, that would be even better. This is possible by using a Spark session.
 With spark-shell we could have an interactive command line Spark session, but state-of-the-art is to use notebooks like Jupyter for this.
-One of the most advanced notebooks for Scala code we found is Polynote, see [https://polynote.org/](polynote.org).
+One of the most advanced notebooks for Scala code we found is Polynote, see [polynote.org](https://polynote.org/).
 We will now start Polynote in docker container, and in another container an external Metastore (Derby database) to share the catalog between our experiments and the notebook.
 Run the following commands to do so:
 
     docker-compose build
     docker-compose run
 
-You should now be able to open Polynote on port ...
+You should now be able to access Polynote at localhost:8192. Please walk-through the Notebook "SelectingData" to see our DataObjects data, and feel free to play around. 
+
+In the next step we are going to 
+
+:::info Docker on Windows
+
+You can use Docker Desktop for Windows together with Windows command line or Windows Linux Subsystem (WSL2) for this tutorial. But note that Docker Desktop for Windows needs a license for commercial use 
+beginning of 2022.
+
+There is a free alternative called Podman for WSL2 from Redhat, which has a compatible command line and also the Dockerfiles are compatible, see [https://podman.io/](podman.io).
+Further advantages are that Podman is more lightweight - it doesn't need a service to just run a container and doesn't need root privileges. 
+Although for podman-compose a lightweight service is needed.
+Install podman incl. podman-compose on WSL2 Ubuntu:
+
+    . /etc/os-release
+    echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+    curl -L "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key" | sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get -y upgrade
+    sudo apt-get -y install podman
+
+Install podman-compose for podman in WSL2 with Podman service (according to (https://fdit-gitlab.dit.htwk-leipzig.de/martin.meszaros/wsl2-podman-compose/-/tree/master))
+ 
+    sudo apt install python3-pip
+    sudo pip3 install podman-compose
+    sudo wget -O /etc/init.d/podman-service https://fdit-gitlab.dit.htwk-leipzig.de/martin.meszaros/wsl2-podman-compose/-/raw/master/podman-service?inline=false
+    sudo chmod +x /etc/init.d/podman-service
+
+After starting `sudo podman-compose up` in the getting-started folder you should now be able to open Polynote on port localhost:8192, 
+as WSL2 automatically publishes all ports on Windows. If the port is not accessible, you can use "wsl hostname -I" on
+Windows command line to get the IP adress of WSL bestimmen, and then access Polynote over {ip-adresse}:8192.
+:::
 
 
 
