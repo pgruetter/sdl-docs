@@ -106,7 +106,7 @@ To configure Spark to use our external metastore, add the following spark proper
 You can use Docker Desktop for Windows together with Windows command line or Windows Linux Subsystem (WSL2) for this tutorial. But note that Docker Desktop for Windows needs a license for commercial use
 beginning of 2022.
 
-There is a free alternative for Linux or WSL2 called Podman from Redhat, which has a compatible command line and also the Dockerfiles are compatible, see [https://podman.io/](podman.io).
+There is a free alternative for Linux or WSL2 called Podman from Redhat, which has a compatible command line and also the Dockerfiles are compatible, see [podman.io](https://podman.io/).
 Further advantages are that Podman is more lightweight - it doesn't need a service and root privileges to run containers.
 Install podman on WSL2 Ubuntu:
 
