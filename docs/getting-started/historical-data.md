@@ -5,31 +5,34 @@ title: Keeping historical data
 ## Goal
 
 Data generally can be split into two groups:
-- Master data: data about objects that evolve over time, e.g. an airport, a person, a product... 
-- Transactional data: data about events that took place at a certain point in time, e.g. a flight, payment... 
+- Master data:   
+data about objects that evolve over time, e.g. an airport, a person, a product... 
+- Transactional data:  
+data about events that took place at a certain point in time, e.g. a flight, a payment... 
 
-To keep historical data for these categories different strategies are applied:
-- **Master data** normally is **historized** - this means to track the evolution of objects over time by introducing a time dimension. 
+To keep historical data for both these categories, different strategies are applied:
+- **Master data** is most often **historized** - this means tracking the evolution of objects over time by introducing a time dimension. 
   Usually this is modelled with two additional attributes "valid_from" and "valid_to", where "valid_from" is an additional primary key column.
-- **transactional data** normally is **deduplicated**, as only the latest state of a specific event is of interest. If an update for an event occurs, the previous information is discarded (or consolidated in special cases).
-  Additional care must be taken to keep all historical events, even if they are no longer present in the source system. Often specific housekeeping rules are applied (e.g. retention period), either for legal or cost saving purpose.
+- **Transactional data** is usually **deduplicated**, as only the latest state of a specific event is of interest. If an update for an event occurs, the previous information is discarded (or consolidated in special cases).
+  Additional care must be taken to keep all historical events, even if they are no longer present in the source system. Often specific housekeeping rules are applied (e.g. retention period), either for legal or cost saving reasons.
 
 ## Requirements
 
 For Historization and Deduplication a data pipeline needs to read the state of the output DataObject, merge it with the new state of the input DataObject and write the result to the output DataObject.
-To read and write the same DataObject in the same SDL Action, this must be a transactional DataObject. It means the DataObject must implement the interface TransactionalSparkTableDataObject of SDL.
+To read and write the same DataObject in the same SDL Action, this must be a transactional DataObject. 
+It means the DataObject must implement the interface TransactionalSparkTableDataObject of SDL.
 Luckily in the previous chapter we already upgraded our data pipeline to use DeltaLakeTableDataObject, which is a TransactionalSparkTableDataObject.
 
-Further we need a key to identify records for a specific object in our data, so we can build the time dimension or deduplicate records of the same object:
-- For airport masterdata (int_airports) the attribute "ident" clearly serves this purpose.
-- For departure data (int_departures) it gets more complicated to identify a flight. To simplify let's assume we're only interested in one flight per aircraft, departure airport and day.
-  The key would then be the attributes "icao24", "estdepartureairport", and trunc_date
+Further, we need a key to identify records for a specific object in our data, so we can build the time dimension or deduplicate records of the same object:
+- For airport masterdata (`int_airports`) the attribute "ident" clearly serves this purpose.
+- For departure data (`int_departures`) it gets more complicated to identify a flight. To simplify, let's assume we're only interested in one flight per aircraft, departure airport and day.
+  The key would then be the attributes `icao24`, `estdepartureairport` and `trunc_date`.
 
 ## Historization of airport data
 
 To historize airport master data, we have to adapt our configuration as follows:
 
-Add primary key to table definition of int-airports:
+Add a primary key to the table definition of `int-airports`:
 
     table {
       db = "default"
@@ -37,26 +40,39 @@ Add primary key to table definition of int-airports:
       primaryKey = [ident]
     }
 
-Change type of Action select-airport-cols from CopyAction to HistorizeAction, and adapt its name to the new function, e.g. historize-airports.
+Note, that a primary key can be a composite primary key, therefore you need to define an array of columns `[ident]`.
+
+For the action `select-airport-cols`, change it's type from `CopyAction` to `HistorizeAction`.  
+While you're add it, rename it to `historize-airports` to reflect it's new function.
 
     historize-airports {
       type = HistorizeAction
       ...
     }
 
-Now delete table and directory of DataObject int-airports through Polynote, as it will get two new columns dl_ts_captured and dl_ts_delimited:
+With historization, this table will now get two additional columns called `dl_ts_captured` and `dl_ts_delimited`.
+Schema evolution of existing tables will be explained later, so for now, just delete the table and it's data for the DataObject `int-airports` through Polynote:
 
     val dataIntAirports = registry.get[DeltaLakeTableDataObject]("int-airports")
     dataIntAirports.dropTable
 
-Then start Action historize-airports - as `--feed-sel` parameter of SDL command line supports more options to select actions to execute (see command line help), 
-we will now only execute this action by changing this parameter to `--feed-sel ids:historize-airports`:
+:::caution
+Depending on your system setup, it's possible that Polynote is not allowed to drop the data of your table. 
+If you receive strange errors about dl_ts_captured and dl_ts_delimited not being found, please delete the folder data/int-airports/ manually.
+:::
+
+Then start Action `historize-airports`. 
+You may have seen that the `--feed-sel` parameter of SDL command line supports more options to select actions to execute (see command line help). 
+We will now only execute this single action by changing this parameter to `--feed-sel ids:historize-airports`:
 
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config --network getting-started_default smart-data-lake/gs1:latest -c /mnt/config --feed-sel ids:historize-airports
 
-After successful execution you can check the schema and data of our table in Polynote. It now has a time dimensions through the two new columns dl_ts_captured and dl_ts_delimited.
-They form a closed interval, meaning start and end time are inclusive. It has millisecond precision, but the timestamp value is set by to current time during our data pipeline run.
-The two attributes show the period for which an object with this combination of attribute values has existed in our data source. The sampling rate is given by the frequency that our data pipeline is scheduled.
+After successful execution you can check the schema and data of our table in Polynote. 
+It now has a time dimension through the two new columns `dl_ts_captured` and `dl_ts_delimited`.
+They form a closed interval, meaning start and end time are inclusive. 
+It has millisecond precision, but the timestamp value is set to the current time of our data pipeline run.
+The two attributes show the time period in which an object with this combination of attribute values has existed in our data source. 
+The sampling rate is given by the frequency that our data pipeline is scheduled.
 
     dataIntAirports.getDataFrame().printSchema
 
@@ -68,7 +84,7 @@ The two attributes show the period for which an object with this combination of 
     |-- dl_ts_captured: timestamp (nullable = true)
     |-- dl_ts_delimited: timestamp (nullable = true)
 
-If you look at the data there should be only one record per object for now, as we didn't run our data pipeline yet with historical data.
+If you look at the data, there should be only one record per object for now, as we didn't run our data pipeline with historical data yet.
 
     dataIntAirports.getDataFrame().orderBy($"ident",$"dl_ts_captured").show
 
@@ -82,12 +98,20 @@ If you look at the data there should be only one record per object for now, as w
     | 00AR|Newport Hospital ...|           35.6087|         -91.254898|2021-12-05 13:23:...|9999-12-31 00:00:00|
     ...
 
-Lets try to load some historical data and see if there are airports which changed. For this drop table "int-airports" again.
-Then copy the historical result.csv from folder data-fallback-download/stg-airport into folder data/stg-aiport.
-Now start Action historize-airports (and only historize-airports) again to do an "initial load".
-Afterward start actions download-airports and historize-airports by using parameter "--feedsel ids:'ids:(download|historize)-airports'" to get fresh data and build up the airport history.
+Let's try to simulate the historization process by loading a historical state of the data and see if any of the airports have changed since then.
+For this, drop table `int-airports` again.
+Then, copy the historical `result.csv` from the folder `data-fallback-download/stg-airport` into the folder `data/stg-aiport`.
 
-If you check for objects with multiple records you'll find several airports who changed:
+:::caution
+If you already have data in the folder `data/stg-airport`, remove the file `.result.csv.crc` in it.
+Otherwise the Hadoop filesystem will throw an error about invalid data.
+::: 
+
+Now start the action `historize-airports` (and only historize-airports) again to do an "initial load".
+Remember how you do that? That's right, you can define a single action with `--feed-sel ids:historize-airports`.  
+Afterwards, start actions `download-airports` and `historize-airports` by using the parameter `--feedsel 'ids:(download|historize)-airports'` to download fresh data and build up the airport history.
+
+Now check in Polynote again and you'll find several airports that have changed between the intitial and the current state:
 
     dataIntAirports.getDataFrame()
     .groupBy($"ident").count
@@ -117,28 +141,31 @@ When checking the details it seems that for many airports the number of signific
     |CDV3 |Charlottetown (Queen Elizabeth Hospital) Heliport|46.2554925916|-63.0988866091|2021-12-05 20:40:31.629764|2021-12-05 20:52:58.799645|
     +-----+-------------------------------------------------+-------------+--------------+--------------------------+--------------------------+
 
-Value of "dl_ts_capture" respectively "dl_ts_delimited" was set to the current time of our data pipeline run. 
-For an initial load this be set to the time of the historical data set. Currently, this is not possible in SDL, but are plans to implement this, see issue #427.
+Values for `dl_ts_capture` and `dl_ts_delimited` respectively were set to the current time of our data pipeline run. 
+For an initial load, this should be set to the time of the historical data set. 
+Currently, this is not possible in SDL, but are plans to implement this, see issue [#427](https://github.com/smart-data-lake/smart-data-lake/issues/427).
 
-Now lets continue with flight data.
+Now let's continue with flight data.
 
 :::tip Spark performance
-Maybe you share the impression that HistorizeAction runs quite long for a small amount of data. 
-On one side this is because in the background it joins all existing data with the new input data and checks for changes.
-On the other side there is a Spark property we should tune for small datasets. If Spark joins data it needs two processing stages and a shuffle in between to do so (you read more about this in some Spark tutorial).
-The default value is to create 200 tasks for in each shuffle. With our dataset 2 tasks would be already enough.
+Maybe you're under the impression that HistorizeAction runs quite long for a small amount of data. 
+And you're right about that:   
+On one side this is because in the background, it joins all existing data with the new input data and checks for changes.  
+On the other side there is a Spark property we should tune for small datasets. 
+If Spark joins data, it needs two processing stages and a shuffle in between to do so (you can read more about this in various Spark tutorials).
+The default value is to create 200 tasks in each shuffle. With our dataset, 2 tasks would be enough already.
 You can tune this by setting the following property in global.spark-options of your application.conf:
 
     "spark.sql.shuffle.partitions" = 2
 
-Also, the algorithm to detect and merge changes can be optimized by using Delta formats merge capabilities. This we will cover in part three of the tutorial. 
+Also, the algorithm to detect and merge changes can be optimized by using Delta formats merge capabilities. This will be covered in part three of this tutorial. 
 :::
 
 ## Deduplication of flight data
 
 To deduplicate departure flight data, we have to adapt our configuration as follows:
 
-Add primary key to table definition of int-departures:
+Add a primary key to the table definition of `int-departures`:
 
     table {
       db = "default"
@@ -146,8 +173,8 @@ Add primary key to table definition of int-departures:
       primaryKey = [icao24, estdepartureairport, dt]
     }
 
-Change type of Action prepare-departures from CopyAction to DeduplicateAction, and adapt its name to the new function, e.g. deduplicate-departures.
-It also needs an additional transformer to calculate the new primary key column "dt" derived from column "firstseen". 
+Change the type of action `prepare-departures` from `CopyAction`, this time to `DeduplicateAction`, and reanme it `deduplicate-departures`, again to reflect it's new type.
+It also needs an additional transformer to calculate the new primary key column "dt" derived from the column `firstseen` so make sure to add these lines too: 
 
     deduplicate-departures {
       type = DeduplicateAction
@@ -159,7 +186,7 @@ It also needs an additional transformer to calculate the new primary key column 
       ...
     }
 
-Now delete table and directory of DataObject int-departures through Polynote, as it will get new columns "dt" and "dl_ts_captured":
+Now, delete the table and data of the DataObject `int-departures` in Polynote, to easily prepare it for the new columns `dt` and `dl_ts_captured`.
 
     val dataIntDepartures = registry.get[DeltaLakeTableDataObject]("int-departures")
     dataIntDepartures.dropTable
