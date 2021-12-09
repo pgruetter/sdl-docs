@@ -173,8 +173,8 @@ Add a primary key to the table definition of `int-departures`:
       primaryKey = [icao24, estdepartureairport, dt]
     }
 
-Change the type of action `prepare-departures` from `CopyAction`, this time to `DeduplicateAction`, and reanme it `deduplicate-departures`, again to reflect it's new type.
-It also needs an additional transformer to calculate the new primary key column "dt" derived from the column `firstseen` so make sure to add these lines too: 
+Change the type of action `prepare-departures` from `CopyAction`, this time to `DeduplicateAction` and rename it to `deduplicate-departures`, again to reflect its new type.
+It also needs an additional transformer to calculate the new primary key column `dt` derived from the column `firstseen` so make sure to add these lines too: 
 
     deduplicate-departures {
       type = DeduplicateAction
@@ -186,7 +186,7 @@ It also needs an additional transformer to calculate the new primary key column 
       ...
     }
 
-Now, delete the table and data of the DataObject `int-departures` in Polynote, to easily prepare it for the new columns `dt` and `dl_ts_captured`.
+Now, delete the table and data of the DataObject `int-departures` in Polynote, to prepare it for the new columns `dt` and `dl_ts_captured`.
 
     val dataIntDepartures = registry.get[DeltaLakeTableDataObject]("int-departures")
     dataIntDepartures.dropTable
@@ -195,7 +195,8 @@ Then start Action deduplicate-departures:
 
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config --network getting-started_default smart-data-lake/gs1:latest -c /mnt/config --feed-sel ids:deduplicate-departures
 
-After successful execution you can check the schema and data of our table in Polynote. The new columns dl_ts_captured shows the current time of the data pipeline run when this object first occurred in the input data. 
+After successful execution you can check the schema and data of our table in Polynote. 
+The new column `dl_ts_captured` shows the current time of the data pipeline run when this object first occurred in the input data. 
 
     dataIntDepartures.getDataFrame().printSchema
 
@@ -215,7 +216,7 @@ After successful execution you can check the schema and data of our table in Pol
     |-- dt: string (nullable = true)
     |-- dl_ts_captured: timestamp (nullable = true)
 
-We can check the work of DeduplicationAction by the following query in Polynote: 
+We can check the work of DeduplicateAction by the following query in Polynote: 
 
     dataIntDepartures.getDataFrame()
     .groupBy($"icao24", $"estdepartureairport", $"dt")
@@ -239,11 +240,13 @@ We can check the work of DeduplicationAction by the following query in Polynote:
     ...
 
 ... and it seems that it did not work properly! There are 2 or even 3 records for the same primary key!
-On the otherside DeduplicationAction did not have much work to do, as we just deleted this table before.
+Even worse, we just deleted this table before, so DeduplicateAction shouldn't have any work to do at all.
 
-In fact DeduplicateAction assumes that input data is already unique for the given primary key, because deduplication is costly and data often is already unique.
-But in our example we have duplicates in the input data set, and we need to add some deduplicate logic to our input data (this will probably become a configuration flag in future SDL version, see issue #428).
-As the easiest way to do this is by using the Scala Spark API, we will add a ScalaCodeDfTransformer as follows:
+In fact DeduplicateAction assumes that input data is already unique for the given primary key. 
+It doesn't deduplicate your input data again, because deduplication is costly and data often is already unique.
+But in our example we have duplicates in the input data set, and we need to add some deduplication logic to our input data (this will probably become a configuration flag in future SDL version, see issue [#428](https://github.com/smart-data-lake/smart-data-lake/issues/428)).
+
+As the easiest way to do this is by using the Scala Spark API, we will add a second ScalaCodeDfTransformer as follows (make sure you get the brackets right): 
 
     deduplicate-departures {
       type = DeduplicateAction
@@ -266,25 +269,33 @@ As the easiest way to do this is by using the Scala Spark API, we will add a Sca
       ...
     }
 
-If you run Action deduplicate-departures again and check the result in Polynote, everything is fine now.
+If you run Action `deduplicate-departures` again and check the result in Polynote, everything is fine now.
 
-For sure DeduplicationAction did not have much work to do, as this was the first data load. 
-In order to get different data you would need to adjust the unix timestamp parameters in the URL of DataObject ext-departures. Feel free to play around.
+:::info
+Note how we have used a third way of defining transformation logic now:  
+In part 1 we first used a SQLDfsTransformer writing SQL code.   
+Then for the more complex example of computing distances, we used a  ScalaClassDfTransformer pointing to a Scala class.   
+Here, we simply include Scala code in our configuration file directly.
+:::
+
+For sure DeduplicateAction did not have much work to do, as this was the first data load. 
+In order to get different data you would need to adjust the unix timestamp parameters in the URL of DataObject `ext-departures`. 
+Feel free to play around.
 
 :::info Scala Code
-Scala actionally is a compiled language. The compiler creates bytecode which can be run on a JVM.
+Scala is a compiled language. The compiler creates bytecode which can be run on a JVM.
 Normally compilation takes place before execution. So how does it work with scala code in the configuration as in our deduplication logic above?
 
-With scala you can compile code on the fly. This is actionally what the Scala Shell/REPL is doing as well. The Scala code in the configuration above gets
-compiled when ScalaCodeDfTransformer is instantiated during startup of SDL.
+With Scala, you can compile code on the fly. This is actually what the Scala Shell/REPL is doing as well. 
+The Scala code in the configuration above gets compiled when ScalaCodeDfTransformer is instantiated during startup of SDL.
 :::
 
 ## Summary
 
-You have seen different parts of industrializing a data pipeline like robust data formats and caring about historical data.
-Further you have explored data interactively with a notebook. 
+You have now seen different parts of industrializing a data pipeline like robust data formats and caring about historical data.
+Further, you have explored data interactively with a notebook. 
 
 The final configuration file of Part 2 should look like [this](config-examples/application-historical-part2.conf)
 
-In Part 3 we will see how to incrementally load fresh flight data and optimize deduplication and historization.
+In part 3 we will see how to incrementally load fresh flight data and optimize deduplication and historization.
 See you!
