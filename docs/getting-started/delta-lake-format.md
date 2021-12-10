@@ -112,7 +112,7 @@ To do so, run the following commands in the projects root directory:
     
     docker-compose build
     mkdir -p data/_metastore
-    docker-compose run
+    docker-compose up
 
 You should now be able to access Polynote at `localhost:8192`. 
 
