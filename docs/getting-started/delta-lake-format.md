@@ -52,7 +52,7 @@ Let's start by changing the existing definition for `int-airports`:
         }
     }
 
-Then create a new, similar data object `int-departure`: 
+Then create a new, similar data object `int-departures`: 
 
     int-departures {
         type = DeltaLakeTableDataObject
@@ -97,7 +97,11 @@ Because you deleted all data first.
 
 Remember from part 1 that we either need to define a schema for our downloaded files or we need to execute the download steps separately on the first run.
 The first command only executes the download steps, the second command executes everything but the download steps (regex with negative lookahead).
+See [Common Problems](common-problems) for more Info.
 :::
+
+
+Getting an error like `io.smartdatalake.util.webservice.WebserviceException: Read timed out`? Check the list of [Common Problems](common-problems) for a workaround.
 
 ## Reading Delta Lake Format with Spark
 
@@ -114,30 +118,19 @@ To do so, run the following commands in the projects root directory:
     mkdir -p data/_metastore
     docker-compose up
 
+This might take multiple minutes.
 You should now be able to access Polynote at `localhost:8192`. 
 
 :::info Docker on Windows
-You can use Docker Desktop for Windows together with Windows command line or Windows Linux Subsystem (WSL2) for this tutorial. But note that Docker Desktop for Windows needs a license for commercial use
-beginning of 2022.
+If you use Windows, please read our note on [Docker for Windows](docker-on-windows).
 
-There is a free alternative for Linux or WSL2 called Podman from Redhat, which has a compatible command line and also the Dockerfiles are compatible, see [podman.io](https://podman.io/).
-Further advantages are that Podman is more lightweight - it doesn't need a service and root privileges to run containers.
-Install podman on WSL2 Ubuntu:
 
-    . /etc/os-release
-    echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
-    curl -L "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key" | sudo apt-key add -
-    sudo apt-get update
-    sudo apt-get -y upgrade
-    sudo apt-get -y install podman
+If you encounter the following error on Windows:
 
-Install podman-compose for podman in WSL2:
+`ERROR [stage-1 4/5] RUN chmod +x install_spark.sh && ./install_spark.sh`
 
-    sudo apt install python3-pip
-    sudo pip3 install podman-compose
-
-After starting `podman-compose up` in the getting-started folder you should now be able to open Polynote on port localhost:8192, as WSL2 automatically publishes all ports on Windows.
-If the port is not accessible, you can use `wsl hostname -I` on Windows command line to get the IP adress of WSL, and then access Polynote over {ip-address}:8192.
+that probably means that the file `install_spark.sh` got automatically converted to CRLF Line Endings on your machine.
+You can fix the Problem by converting the file to LF Line endings.
 :::
 
 But when you walk through the prepared notebook "SelectingData", you won't see any tables and data yet. 

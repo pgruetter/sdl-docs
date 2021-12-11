@@ -17,6 +17,10 @@ module.exports = {
             'getting-started/industrializing',
             'getting-started/delta-lake-format',
             'getting-started/historical-data'
+        ],
+        'Troubleshooting': [
+          'getting-started/common-problems',
+          'getting-started/docker-on-windows',
         ]
       }
 

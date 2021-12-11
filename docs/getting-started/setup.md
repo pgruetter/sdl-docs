@@ -7,7 +7,7 @@ title: Technical Setup
 
 To run this tutorial you just need two things:
 
-- [Docker](https://www.docker.com/get-started), including docker-compose
+- [Docker](https://www.docker.com/get-started), including docker-compose. If you use Windows, please read our note on [Docker for Windows](docker-on-windows),
 - The [source code of the example](https://github.com/smart-data-lake/getting-started).
 
 ## Build docker image
@@ -25,7 +25,7 @@ To run this tutorial you just need two things:
 Let's see Smart Data Lake in action!
 Run the following commands in the same terminal:
 
-    mkdir data
+    mkdir -f data
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel download
 
 This creates a folder in the current directory named *data* and then 
