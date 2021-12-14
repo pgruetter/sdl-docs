@@ -85,6 +85,20 @@ To execute the pipeline, use the same command as before, but change the feed to 
 
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel compute
 
+:::caution
+
+If you encounter an error that looks like this:
+
+    Exception in thread "main" io.smartdatalake.util.dag.TaskFailedException: Task select-airport-cols failed. Root cause is 'IllegalArgumentException: requirement failed: (DataObject~stg-airports) DataObject schema is undefined. A sche
+    ma must be defined if there are no existing files.'
+    Caused by: java.lang.IllegalArgumentException: requirement failed: (DataObject~stg-airports) DataObject schema is undefined. A schema must be defined if there are no existing files.
+
+Execute the feed download again. After that feed was successfully executed, the execution of the feed .* or compute will work.
+More one this problem in the List of [Common Problems](common-problems).
+
+
+:::
+
 Now you should see multiple files in the folder *data/int-airports*. Why is it split accross multiple files?
 This is due to the fact that the query runs with Apache Spark under the hood which computes the query in parallel for different portions of the data.
 We might work on a small data set for now, but keep in mind that this would scale up horizontally for large amounts of data.
@@ -148,21 +162,6 @@ One popular option is to use regular expressions to execute multiple feeds toget
 In our case, we can run the entire data pipeline with the following command : 
 
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel .*
-
-:::caution
-
-In our tutorial, this command will only work if you already have some files under *data/stg-airports* and data/stg-departures.
-This is because in the first step, we download files of which SDL doesn't know the schema of in advance.
-The init-phase will require that for all Data Objects, the schema is known so that it can check for inconsistencies.
-When we already have some files, it will infer the schema based on the files.
-
-To work around this, execute the feed download again. After that feed was successfully executed, the execution of 
-the feed .* will work. 
-
-One way to prevent this problem is to explicitly provide the schema for the JSON and for the CSV-File, 
-which is out of the scope for this part of the tutorial.
-
-:::
 
 
 
