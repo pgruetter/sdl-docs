@@ -51,7 +51,8 @@ While you're add it, rename it to `historize-airports` to reflect it's new funct
     }
 
 With historization, this table will now get two additional columns called `dl_ts_captured` and `dl_ts_delimited`.
-Schema evolution of existing tables will be explained later, so for now, just delete the table and it's data for the DataObject `int-airports` through Polynote:
+Schema evolution of existing tables will be explained later, so for now, just delete the table and it's data for the DataObject `int-airports` through Polynote.
+To access DataObjects from Polynote you need to first read SDL configuration into a registry, see Notebook _SelectingData_ chapter _Select data by using DataObjects configured in SmartDataLake_:
 
     val dataIntAirports = registry.get[DeltaLakeTableDataObject]("int-airports")
     dataIntAirports.dropTable
