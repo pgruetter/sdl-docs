@@ -15,6 +15,7 @@ yarn start
 ```
 
 This command starts a local development server and open up a browser window. Most changes are reflected live without having to restart the server.
+Use `--poll 5000` for live updates when running on a filesystem which doesn't support file notification, e.g. WSL2 with files stored on Windows mount. 
 
 ## Build
 

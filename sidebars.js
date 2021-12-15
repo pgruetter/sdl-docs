@@ -12,6 +12,15 @@ module.exports = {
           'getting-started/joining-it-together',
           'getting-started/joining-departures-and-arrivals',
           'getting-started/compute-distances'
+        ],
+        'Part 2': [
+            'getting-started/industrializing',
+            'getting-started/delta-lake-format',
+            'getting-started/historical-data'
+        ],
+        'Troubleshooting': [
+          'getting-started/common-problems',
+          'getting-started/docker-on-windows',
         ]
       }
 

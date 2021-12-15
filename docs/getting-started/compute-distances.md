@@ -194,7 +194,3 @@ if your download fails you will have to re-execute the download feed before bein
 You successfully recreated the configuration file that is contained in the Docker Image you ran in the first step.
 If you look at [the docker command on the first step](setup.md), you will notice that there was no path specified for the configuration file.
 By default, SDL looks for the config under *src/main/resources*, which is also part of the Docker Image that you created.
-
-
-## Coming Next in Part 2
-Deduplication, Historization...
