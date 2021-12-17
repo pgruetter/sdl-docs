@@ -88,6 +88,7 @@ Finally, adapt the action definition for `join-departures-airports`:
 To run our data pipeline, first delete the data directory - otherwise DeltaLakeTableDataObject will fail because of existing files in different format.
 Then you can execute the usual *docker run* command for all feeds:
 
+    mkdir -f data
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest -c /mnt/config --feed-sel 'download*'
     docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest -c /mnt/config --feed-sel '^(?!download).*'
 
@@ -115,7 +116,8 @@ We will now start Polynote in a docker container, and an external Metastore (Der
 To do so, run the following commands in the projects root directory:
     
     docker-compose build
-    mkdir -p data/_metastore
+    mkdir -f data
+    mkdir -f data/_metastore
     docker-compose up
 
 This might take multiple minutes.
@@ -123,14 +125,6 @@ You should now be able to access Polynote at `localhost:8192`.
 
 :::info Docker on Windows
 If you use Windows, please read our note on [Docker for Windows](docker-on-windows).
-
-
-If you encounter the following error on Windows:
-
-`ERROR [stage-1 4/5] RUN chmod +x install_spark.sh && ./install_spark.sh`
-
-that probably means that the file `install_spark.sh` got automatically converted to CRLF Line Endings on your machine.
-You can fix the Problem by converting the file to LF Line endings.
 :::
 
 But when you walk through the prepared notebook "SelectingData", you won't see any tables and data yet. 

@@ -29,5 +29,17 @@ Install podman-compose for podman in WSL2:
 After starting `podman-compose up` in the getting-started folder you should now be able to open Polynote on port localhost:8192, as WSL2 automatically publishes all ports on Windows.
 If the port is not accessible, you can use `wsl hostname -I` on Windows command line to get the IP adress of WSL, and then access Polynote over {ip-address}:8192.
 
+## Known Issue with podman on WSL2 on Windows
 
+If you suddenly cannot execute any podman commands anymore and get an error like this:
 
+    ERRO[0000] error joining network namespace for container 88a8d5c7115598aeaa31fcd1cee8c084fee3ab2577b4f61dc317053d7da032f9: error retrieving network namespace at /tmp/podman-run-1000/netns/cni-f73b0b0b-155d-3c43-30b2-278280c003f1: unknown FS magic on "/tmp/podman-run-1000/netns/cni-f73b0b0b-155d-3c43-30b2-278280c003f1": ef53
+    Error: error joining network namespace of container 88a8d5c7115598aeaa31fcd1cee8c084fee3ab2577b4f61dc317053d7da032f9: error retrieving network namespace at /tmp/podman-run-1000/netns/cni-f73b0b0b-155d-3c43-30b2-278280c003f1: unknown FS magic on "/tmp/podman-run-1000/netns/cni-f73b0b0b-155d-3c43-30b2-278280c003f1": ef53
+
+Then you may be experiencing a known problem with podman on WSL2 on windows after a system restart related to the /tmp directory.
+
+If you encounter this error, there are two quick workarounds:
+1. Delete the tmp dir of your WSL2 installation and restart WSL2
+2. The podman commands with sudo may still work, eg. `sudo podman ps` will work even if `podman ps` wont
+
+See https://github.com/containers/podman/issues/12236 for more information.
