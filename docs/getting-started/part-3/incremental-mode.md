@@ -26,13 +26,14 @@ download-departures {
   }
 }
 ```
-
-- stg-departures: \
+- stg-departures:  
 By changing the `saveMode` from the default Overwrite to Append mode we ensure that data is incrementally appended to the already stored data instead of overwriting it.
 
-- download-departures: \
+- download-departures:  
 Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder.
-
+:::caution
+Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window tha lies in the past week from now.
+:::
 ## Define state variables
 To make use of the new configured execution mode, we need state variables. Add the following two variables to our CustomWebserviceDataObject.
 ```scala  
@@ -65,7 +66,11 @@ override def getState: Option[String] = {
 We can see that by implementing these two functions we start using the variables defined in the section before.
 
 ## Try it out
-Use the same command as before to run the `stg-departures` feed. Nothing should have changed so far, since we only read and write an empty state. You can go to the state file and there under the field `dataObjectsState` you should find the stored empty state. In the next section we will assign a value to `nextState`.
+We only spoke about this state, but it was never explained where it is stored. To work with state we need to introduce two new configuration parameters, namely `--state-path` and `-n`. This allows us to define the folder and name of the state file. To have access to the state file, we specify the path to be in an already mounted folder.
+```
+  docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel download-departures --state-path /mnt/data/state -n getting-started
+```
+Use now this slightly modified commoand to run the `stg-departures` feed. Nothing should have changed so far, since we only read and write an empty state. You can can check that by opening the file `getting-started.<runId>.<attemptId>.json` and having a look at the field `dataObjectsState`. The stored state is currently empty. In the next section we will assign a value to `nextState`, such that the is `dataObjectsState` is getting written. The two variables `<runId>` and `<attemptId>` describe smart data like intrinsics. For each execution the `<runId>` is incremented by one. The `<attemptId>` is normally 1 and only increased by one if smart data lake builder had to recover a failed execution. This recovery mechanism will be part in a future part of this tutorial.
 
 ## Define a Query Logic
 What we would like to achieve it the following query logic. The starting point is the query parameters provided in the configuration file and no previous state. With these information we query the departures for the two airports in the given time window. Afterwards, we store for each airport the time where the next query beginns. This euqals the end time of the current query. Now the true incremental phase starts as we now have a state as the starting point. The proceeding query will query the API from the begin stored in the previous state until now. 
