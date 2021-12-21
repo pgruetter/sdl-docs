@@ -13,9 +13,18 @@ module.exports = {
           'getting-started/joining-departures-and-arrivals',
           'getting-started/compute-distances'
         ],
+        'Part 2': [
+            'getting-started/industrializing',
+            'getting-started/delta-lake-format',
+            'getting-started/historical-data'
+        ],
         'Part 3': [
           'getting-started/part-3/custom-webservice',
-          'getting-started/part-3/incremental-mode',
+          'getting-started/part-3/incremental-mode'
+        ],
+        'Troubleshooting': [
+          'getting-started/common-problems',
+          'getting-started/docker-on-windows'
         ]
       }
 
