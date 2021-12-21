@@ -135,4 +135,4 @@ and instead of returning the `departuresDf` variable return the `dfCached` varia
 ```
 If you restart the program you should see that we do not query the api twice anymore.
 
-At the end your config file should look somehting like [this](../config-examples/application-download-part3-custom-webservice.conf).
+At the end your config file should look somehting like [this](../config-examples/application-download-part3-custom-webservice.conf) and the Data Object like [this](../config-examples/CustomWebserviceDataObject-1.scala).
