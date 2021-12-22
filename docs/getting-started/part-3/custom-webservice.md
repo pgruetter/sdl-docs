@@ -139,6 +139,8 @@ if(context.phase == ExecutionPhase.Init){
   // simply return an empty data frame
   session.emptyDataFrame
 } else {
+  // place the new implementation of currentQueryParameters below     
+
   // given the query parameters, generate all requests
   val departureRequests = currentQueryParameters.map(
     param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
@@ -153,6 +155,8 @@ if(context.phase == ExecutionPhase.Init){
     .withColumn("created_at", current_timestamp())
     .select(explode($"response").as("record"), $"created_at")
     .select("record.*", "created_at")
+  
+  // put simple nextState logic below
 
   departuresDf
 }

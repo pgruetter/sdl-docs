@@ -46,7 +46,7 @@ The corresponding `State` case class is defined as
   case class State(airport: String, nextBegin: Long)
 ```
 
-and should be added in the same file outside of the Data Object. For example, add it just below the Departure case class. 
+and should be added in the same file outside of the Data Object. For example, add it just below the `Departure` case class. 
 The state stores always the airport and the nextBegin in unix time to tell the next run from where in time the new query has to start. 
 
 Concerning the state variables, `previousState` will basically be used for all the logic of the Data Object and `nextState` will be used to store the state for the next run.
@@ -89,24 +89,24 @@ The starting point is the query parameters provided in the configuration file an
 During the first execution, we query the departures for the two airports in the given time window. 
 Afterwards, we store for each airport the `begin`-parameter for the next query. This equals the `end`-parameter of the current query. 
 Now the true incremental phase starts as we now have a state as the starting point. We query the API from the `begin` stored in the previous state until now. 
-For this to work, we need to make two changes. First the `currentQueryParameters` variable has to be adapted to 
+For this to work, we need to make two changes. First add the variable
+```
+private val now = Instant.now.getEpochSecond
+
+``` 
+just below the nextState variable. Then modify the `currentQueryParameters` variable according to
 ```scala
 // if we have query parameters in the state we will use them from now on
 val currentQueryParameters = if (previousState.isEmpty) queryParameters.get else previousState.map{
   x => DepartureQueryParameters(x.airport, x.nextBegin, now)
 }
 ```
-and second the logic for the next state has to be implemented. The logic for the next state can be placed at the end of the if statement in the `getDataFrame` method.
+and move it below the comment `// place the new implementation of currentQueryParameters below this line`, which can be found in the `getDataFrame` method. The implemented logic 
 ```scala
-// define next state
-if(dfCached.isEmpty) {
-
-  // other stuff
-
-  if(previousState.isEmpty){
-    nextState = currentQueryParameters.map(params => State(params.airport, params.end))
-  } else {
-    nextState = previousState.map(params => State(params.airport, now))
-  }
+if(previousState.isEmpty){
+  nextState = currentQueryParameters.map(params => State(params.airport, params.end))
+} else {
+  nextState = previousState.map(params => State(params.airport, now))
 }
 ```
+for the next state can be placed below the comment `// put simple nextState logic below`. Now you should again build the docker image and run it multiple times. The scenario will be that the first run fetches the data  defined in the configuration file, then the proceeding run we retrieves the data from the endpoint of the last run until now. The third execution will most probably fail, as only little seconds have been passed and most likely no data is available. Sadly, the api response in such cases with a **404** error code instead with a **200** and an empty response.
