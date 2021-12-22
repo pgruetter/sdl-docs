@@ -1,6 +1,8 @@
 module.exports = {
   docs: {
-    'Smart Data Lake' : ['intro'],
+    'Smart Data Lake' : ['intro',
+      'build', 'features', 'reference', 'glossary', 'public-cloud', 'google-dataproc', 'microsoft-azure', 'yarn', 'testing', 'troubleshooting'
+    ],
     'Getting Started' : [
       'getting-started/setup',
       'getting-started/get-input-data',
