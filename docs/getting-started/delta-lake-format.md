@@ -116,8 +116,7 @@ We will now start Polynote in a docker container, and an external Metastore (Der
 To do so, run the following commands in the projects root directory:
     
     docker-compose build
-    mkdir -f data
-    mkdir -f data/_metastore
+    mkdir -p data/_metastore
     docker-compose up
 
 This might take multiple minutes.
