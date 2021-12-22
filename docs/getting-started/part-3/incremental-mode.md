@@ -46,7 +46,10 @@ The corresponding `State` case class is defined as
   case class State(airport: String, nextBegin: Long)
 ```
 
-and should be added in the same file outside of the Data Object. For example, add it just below the Departure case class. The state stores always the airport and the nextBegin in unix time to provide the next run the from where the new query has to start. Concerning the state variables `previousState` will basically be used for all the logic of the Data Object and `nextState` will be used to store the state for the next run.
+and should be added in the same file outside of the Data Object. For example, add it just below the Departure case class. 
+The state stores always the airport and the nextBegin in unix time to tell the next run from where in time the new query has to start. 
+
+Concerning the state variables, `previousState` will basically be used for all the logic of the Data Object and `nextState` will be used to store the state for the next run.
 
 ## Read and write state
 To actually work with the state we need to implement the `CanCreateIncrementalOutput` trait. This can be done by adding `with CanCreateIncrementalOutput` to the `CustomWebserviceDataObject`. Consequently, we need to implement the functions `setState` and `getState` defined in the trait. 
@@ -66,15 +69,27 @@ override def getState: Option[String] = {
 We can see that by implementing these two functions we start using the variables defined in the section before.
 
 ## Try it out
-We only spoke about this state, but it was never explained where it is stored. To work with state we need to introduce two new configuration parameters, namely `--state-path` and `-n`. This allows us to define the folder and name of the state file. To have access to the state file, we specify the path to be in an already mounted folder.
+We only spoke about this state, but it was never explained where it is stored. To work with state we need to introduce two new configuration parameters, namely `--state-path` and `-n`. 
+This allows us to define the folder and name of the state file. To have access to the state file, we specify the path to be in an already mounted folder.
+
 ```
+  docker build -t smart-data-lake/gs1 .
   docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel download-departures --state-path /mnt/data/state -n getting-started
 ```
-Use now this slightly modified commoand to run the `stg-departures` feed. Nothing should have changed so far, since we only read and write an empty state. You can can check that by opening the file `getting-started.<runId>.<attemptId>.json` and having a look at the field `dataObjectsState`. The stored state is currently empty. In the next section we will assign a value to `nextState`, such that the is `dataObjectsState` is getting written. The two variables `<runId>` and `<attemptId>` describe smart data like intrinsics. For each execution the `<runId>` is incremented by one. The `<attemptId>` is normally 1 and only increased by one if smart data lake builder had to recover a failed execution. This recovery mechanism will be part in a future part of this tutorial.
+Use now this slightly modified command to run the `download-departures` feed. Nothing should have changed so far, since we only read and write an empty state. 
+You can can check that by opening the file `getting-started.<runId>.<attemptId>.json` and having a look at the field `dataObjectsState`. The stored state is currently empty. 
+In the next section we will assign a value to `nextState`, such that the is `dataObjectsState` is getting written. 
+The two variables `<runId>` and `<attemptId>` describe smart data like intrinsics. 
+For each execution the `<runId>` is incremented by one. The `<attemptId>` is normally 1 and only increased by one if smart data lake builder had to recover a failed execution. This recovery mechanism will be part of a future tutorial.
 
 ## Define a Query Logic
-What we would like to achieve it the following query logic. The starting point is the query parameters provided in the configuration file and no previous state. With these information we query the departures for the two airports in the given time window. Afterwards, we store for each airport the time where the next query beginns. This euqals the end time of the current query. Now the true incremental phase starts as we now have a state as the starting point. The proceeding query will query the API from the begin stored in the previous state until now. 
-For this to work, need to make two changes. First the `currentQueryParameters` variable has to be adapted to 
+What we would like to achieve is the following query logic:
+
+The starting point is the query parameters provided in the configuration file and no previous state. 
+During the first execution, we query the departures for the two airports in the given time window. 
+Afterwards, we store for each airport the `begin`-parameter for the next query. This equals the `end`-parameter of the current query. 
+Now the true incremental phase starts as we now have a state as the starting point. We query the API from the `begin` stored in the previous state until now. 
+For this to work, we need to make two changes. First the `currentQueryParameters` variable has to be adapted to 
 ```scala
 // if we have query parameters in the state we will use them from now on
 val currentQueryParameters = if (previousState.isEmpty) queryParameters.get else previousState.map{
