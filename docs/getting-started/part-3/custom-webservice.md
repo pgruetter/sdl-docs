@@ -111,35 +111,58 @@ Having a look at the `getDataFrame` method, we discover more or less the whole l
 Given the configured query parameters, the requests are first prepared using the request method. Have a look at this method and see how we used recursion to implement the retries after a failed request. 
 Afterwards we deserialize the return value from the webservice into the definded case class `Departure`. This result is used to create a dataFrame with the added column *created_at*.  
 
-## Cache Data Frame
-To avoid the behaviour from the previous section, define the variable
+## Get Data Frame
+In this section we will learn how we can avoid sending the requests twice to the api using the execution phase information provided by the smart data lake. We will now implement a *if ... else* statement that allows us to simply define the schema of the expected response in the **Init** phase and to actually query the data in the **Exec** phaes. We start by defining the instance variable below
 ```scala
-private var dfCached : Option[DataFrame] = None
+private var schema : Option[ArrayType] = None
 ```
-in the beginning of the class `CustomWebserviceDataObject`.
-`dfCached` will be used as return variable in the `getDataFrame` method later. To prevent multiple requests simply put the code in the if statement below
+in the beginning of the class `CustomWebserviceDataObject`. The previously discussed logic is enclosed in two `// REPLACE BLOCK` comments. Find this section and replace it with the code below
 ```scala
-if(dfCached.isEmpty) {
-      // given the query parameters, generate all requests
-      val departureRequests = currentQueryParameters.map(
-        param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
-      )
+if(context.phase == ExecutionPhase.Init){
+  import org.apache.spark.sql.types._
+  // define schema
+  schema = Some(ArrayType(StructType(Array(
+    StructField("icao24", StringType),
+    StructField("firstSeen", IntegerType),
+    StructField("estDepartureAirport", StringType),
+    StructField("lastSeen", IntegerType),
+    StructField("estArrivalAirport", StringType),
+    StructField("callsign", StringType),
+    StructField("estDepartureAirportHorizDistance", IntegerType),
+    StructField("estDepartureAirportVertDistance", IntegerType),
+    StructField("estArrivalAirportHorizDistance", IntegerType),
+    StructField("estArrivalAirportVertDistance", IntegerType),
+    StructField("departureAirportCandidatesCount", IntegerType),
+    StructField("arrivalAirportCandidatesCount", IntegerType)
+  ))))
 
-      // make request
-      val departuresResponses = departureRequests.map(request(_))
-      // deserialize the result into a sequence of Departure objects
-      val departures = departuresResponses.flatMap(res => JsonMethods.parse(new String(res)).extract[Seq[Departure]])
-      // create dataframe and add created_at column with the current timestamp
-      val departuresDf = departures.toDF
-        .withColumn("created_at", current_timestamp())
+  // simply return an empty data frame
+  session.emptyDataFrame
+} else {
+  // given the query parameters, generate all requests
+  val departureRequests = currentQueryParameters.map(
+    param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
+  )
+  // make request
+  val departuresResponses = departureRequests.map(request(_))
 
-      dfCached = Some(departuresDf)
-    }
+  // create dataframe with the correct schema and add created_at column with the current timestamp
+  val departuresDf = departuresResponses.toDF("responseBinary")
+    .withColumn("responseString", byte2String($"responseBinary"))
+    .select(from_json($"responseString", schema.get).as("response"))
+    .withColumn("created_at", current_timestamp())
+    .select(explode($"response").as("record"), $"created_at")
+    .select("record.*", "created_at")
+
+  departuresDf
+}
 ```
-and instead of returning the `departuresDf` variable return the `dfCached` variable at the end of the method using
-```scala
-  dfCached.get
-```
+We see that we we need to so some transformations to flatten the result returned by the api. Spark has lots of *User-Defined Functions* (short **udf**) that can be used out of the box. We used such a column based function *from_json* to parse the response string with the right schema.
+
+:::tip
+The return type of the response is `Array[Byte]`. To convert that to `Array[String]` the *udf* function `byte2String `has been used. This function is a nice example how one can define such *udfs* by oneselfs.
+:::
+
 If you rebuild the docker image and then restart the program you should see that we do not query the api twice anymore.
 
 At the end your config file should look somehting like [this](../config-examples/application-download-part3-custom-webservice.conf) and the Data Object like [this](../config-examples/CustomWebserviceDataObject-1.scala).
