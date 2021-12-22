@@ -43,7 +43,7 @@ Add a primary key to the table definition of `int-airports`:
 Note, that a primary key can be a composite primary key, therefore you need to define an array of columns `[ident]`.
 
 For the action `select-airport-cols`, change it's type from `CopyAction` to `HistorizeAction`.  
-While you're add it, rename it to `historize-airports` to reflect it's new function.
+While you're at it, rename it to `historize-airports` to reflect it's new function.
 
     historize-airports {
       type = HistorizeAction
@@ -101,16 +101,11 @@ If you look at the data, there should be only one record per object for now, as 
 
 Let's try to simulate the historization process by loading a historical state of the data and see if any of the airports have changed since then.
 For this, drop table `int-airports` again.
-Then, copy the historical `result.csv` from the folder `data-fallback-download/stg-airport` into the folder `data/stg-aiport`.
-
-:::caution
-If you already have data in the folder `data/stg-airport`, remove the file `.result.csv.crc` in it.
-Otherwise the Hadoop filesystem will throw an error about invalid data.
-::: 
+Then, delete all files in `data/stg-airport` and copy the historical `result.csv` from the folder `data-fallback-download/stg-airport` into the folder `data/stg-aiport`.
 
 Now start the action `historize-airports` (and only historize-airports) again to do an "initial load".
 Remember how you do that? That's right, you can define a single action with `--feed-sel ids:historize-airports`.  
-Afterwards, start actions `download-airports` and `historize-airports` by using the parameter `--feedsel 'ids:(download|historize)-airports'` to download fresh data and build up the airport history.
+Afterwards, start actions `download-airports` and `historize-airports` by using the parameter `--feed-sel 'ids:(download|historize)-airports'` to download fresh data and build up the airport history.
 
 Now check in Polynote again and you'll find several airports that have changed between the intitial and the current state:
 
@@ -144,7 +139,7 @@ When checking the details it seems that for many airports the number of signific
 
 Values for `dl_ts_capture` and `dl_ts_delimited` respectively were set to the current time of our data pipeline run. 
 For an initial load, this should be set to the time of the historical data set. 
-Currently, this is not possible in SDL, but are plans to implement this, see issue [#427](https://github.com/smart-data-lake/smart-data-lake/issues/427).
+Currently, this is not possible in SDL, but there are plans to implement this, see issue [#427](https://github.com/smart-data-lake/smart-data-lake/issues/427).
 
 Now let's continue with flight data.
 
@@ -175,7 +170,8 @@ Add a primary key to the table definition of `int-departures`:
     }
 
 Change the type of action `prepare-departures` from `CopyAction`, this time to `DeduplicateAction` and rename it to `deduplicate-departures`, again to reflect its new type.
-It also needs an additional transformer to calculate the new primary key column `dt` derived from the column `firstseen` so make sure to add these lines too: 
+It also needs an additional transformer to calculate the new primary key column `dt` derived from the column `firstseen`.
+So make sure to add these lines too: 
 
     deduplicate-departures {
       type = DeduplicateAction
@@ -244,7 +240,8 @@ We can check the work of DeduplicateAction by the following query in Polynote:
 Even worse, we just deleted this table before, so DeduplicateAction shouldn't have any work to do at all.
 
 In fact DeduplicateAction assumes that input data is already unique for the given primary key. 
-It doesn't deduplicate your input data again, because deduplication is costly and data often is already unique.
+This would be the case for example, in a messaging context, if you were to receive the same message twice.
+DeduplicateAction doesn't deduplicate your input data again, because deduplication is costly and data often is already unique.
 But in our example we have duplicates in the input data set, and we need to add some deduplication logic to our input data (this will probably become a configuration flag in future SDL version, see issue [#428](https://github.com/smart-data-lake/smart-data-lake/issues/428)).
 
 As the easiest way to do this is by using the Scala Spark API, we will add a second ScalaCodeDfTransformer as follows (make sure you get the brackets right): 
