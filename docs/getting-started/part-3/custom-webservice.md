@@ -13,6 +13,10 @@ title: Custom Webservice
 As a result one is often better off writing a CustomWebserviceDataObject tailored to the API of interest than trying to write a generic WebserviceDataObejct that covers all needs. 
 The goal of this part is to learn how such a CustomWebserviceDataObject can be implemented.
 
+:::tip
+As we are really developing code in this part of the tutorial, it might be a good idea to configure a working development evironment. In the Technical Setup chaptor we introduced the possibilty how one can use intellij for the development. Please [visit](../setup.md) for a more elobarte development experience that manipulating the file in simple text editor.
+:::
+
 ## Starting point
 Again we start with the `application.conf` that resulted from finishing the last part. If you don't have the application.conf from the last part, please copy [this](../config-examples/application-historical-part2.conf) configuration file again to **config/application.conf**.
 
