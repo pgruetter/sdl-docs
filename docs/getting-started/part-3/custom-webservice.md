@@ -14,7 +14,7 @@ As a result one is often better off writing a CustomWebserviceDataObject tailore
 The goal of this part is to learn how such a CustomWebserviceDataObject can be implemented.
 
 ## Starting point
-Again we start with the `application.conf` that resulted from finishing the last part. If you don't have the application.conf from the last part, please copy [this file](../config-examples/application-historical-part2.conf) configuration file again to **config/application.conf**.
+Again we start with the `application.conf` that resulted from finishing the last part. If you don't have the application.conf from the last part, please copy [this](../config-examples/application-historical-part2.conf) configuration file again to **config/application.conf**.
 
 ## Define Data Objects
 We start by rewriting the existing `ext-departures` Data Object. In the configuration file, replace the old configuration with its new definition:
@@ -88,13 +88,8 @@ Having a look at the log, something similar should appear on your screen.
 2021-11-10 14:00:36 INFO  CustomWebserviceDataObject:69 - Success for request https://opensky-network.org/api/flights/departure?airport=LSZB&begin=1630200800&end=1630310979
 2021-11-10 14:00:37 INFO  CustomWebserviceDataObject:69 - Success for request https://opensky-network.org/api/flights/departure?airport=EDDF&begin=1630200800&end=1630310979
 ```
-It is important to notice that the two requests for each airport to the API were not send only once, but twice. 
-This stems from the fact that the method `getDataFrame` of the Data Object is called twice in the DAG execution of the Smart Data Lake Builder: once during the Init Phase, and once again during the Exec Phase.
-See [the end of the get Airports step](../get-airports) for a more information on that.
-
-This will be mitigated in the next section.
-
-Having a look at the `getDataFrame` method, we discover more or less the whole logic currently implemented. 
+It is important to notice that the two requests for each airport to the API were not send only once, but twice. This stems from the fact that the method `getDataFrame` of the Data Object 
+is called twice in the DAG execution of the Smart Data Lake Builder: Once during the Init Phase, and once again during the Exec Phase. See [the end of the get Airports step](../get-airports) for a more information on that. Before we address and mitigate this behaviour in the next section, we have a look at the `getDataFrame` method and the currently implemented logic displayed in the next code section.
 ```
   // given the query parameters, generate all requests
   val departureRequests = currentQueryParameters.map(
@@ -108,11 +103,10 @@ Having a look at the `getDataFrame` method, we discover more or less the whole l
   val departuresDf = departures.toDF
     .withColumn("created_at", current_timestamp())
 ```
-Given the configured query parameters, the requests are first prepared using the request method. Have a look at this method and see how we used recursion to implement the retries after a failed request. 
-Afterwards we deserialize the return value from the webservice into the definded case class `Departure`. This result is used to create a dataFrame with the added column *created_at*.  
+Given the configured query parameters, the requests are first prepared using the request method. If you have a look the implementation of the  `request` method, you notice that we provide some ScalaJCustomWebserviceClient that is based on the *ScalaJ* library. It is also in the `request` method where it one can configure the amount of retries. Afterwards we deserialize the return value from the webservice into the definded case class `Departure`. This result is used to create a dataFrame with the added column *created_at*.  
 
 ## Get Data Frame
-In this section we will learn how we can avoid sending the requests twice to the api using the execution phase information provided by the smart data lake. We will now implement a *if ... else* statement that allows us to simply define the schema of the expected response in the **Init** phase and to actually query the data in the **Exec** phaes. We start by defining the instance variable below
+In this section we will learn how we can avoid sending the requests twice to the API using the execution phase information provided by the smart data lake. We will now implement a simple *if ... else* statement that allows us to simply define the schema of the expected response in the **Init** phase and to actually query the data in the **Exec** phase. We start by defining the *schema* instance variable below
 ```scala
 private var schema : Option[ArrayType] = None
 ```
@@ -161,12 +155,12 @@ if(context.phase == ExecutionPhase.Init){
   departuresDf
 }
 ```
-We see that we we need to so some transformations to flatten the result returned by the api. Spark has lots of *User-Defined Functions* (short **udf**) that can be used out of the box. We used such a column based function *from_json* to parse the response string with the right schema.
+We see that we we need to so some transformations to flatten the result returned by the API. Spark has lots of *User-Defined Functions* (short **udf**) that can be used out of the box. We used such a column based function *from_json* to parse the response string with the right schema.
 
 :::tip
 The return type of the response is `Array[Byte]`. To convert that to `Array[String]` the *udf* function `byte2String `has been used. This function is a nice example how one can define such *udfs* by oneselfs.
 :::
 
-If you rebuild the docker image and then restart the program you should see that we do not query the api twice anymore.
+If you rebuild the docker image and then restart the program you should see that we do not query the API twice anymore.
 
 At the end your config file should look somehting like [this](../config-examples/application-download-part3-custom-webservice.conf) and the Data Object like [this](../config-examples/CustomWebserviceDataObject-1.scala).

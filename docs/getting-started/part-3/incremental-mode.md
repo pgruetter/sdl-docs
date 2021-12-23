@@ -88,13 +88,13 @@ What we would like to achieve is the following query logic:
 The starting point is the query parameters provided in the configuration file and no previous state. 
 During the first execution, we query the departures for the two airports in the given time window. 
 Afterwards, we store for each airport the `begin`-parameter for the next query. This equals the `end`-parameter of the current query. 
-Now the true incremental phase starts as we now have a state as the starting point. We query the API from the `begin` stored in the previous state until now. 
+Now the true incremental phase starts as we now have stored the state for the next starting point. We query the API from the `begin` stored in the previous state until now. 
 For this to work, we need to make two changes. First add the variable
 ```
 private val now = Instant.now.getEpochSecond
 
 ``` 
-just below the nextState variable. Then modify the `currentQueryParameters` variable according to
+just below the `nextState` variable. Then modify the `currentQueryParameters` variable according to
 ```scala
 // if we have query parameters in the state we will use them from now on
 val currentQueryParameters = if (previousState.isEmpty) queryParameters.get else previousState.map{
@@ -109,4 +109,4 @@ if(previousState.isEmpty){
   nextState = previousState.map(params => State(params.airport, now))
 }
 ```
-for the next state can be placed below the comment `// put simple nextState logic below`. Now you should again build the docker image and run it multiple times. The scenario will be that the first run fetches the data  defined in the configuration file, then the proceeding run we retrieves the data from the endpoint of the last run until now. The third execution will most probably fail, as only little seconds have been passed and most likely no data is available. Sadly, the api response in such cases with a **404** error code instead with a **200** and an empty response.
+for the next state can be placed below the comment `// put simple nextState logic below`. Now you should again build the docker image and run it multiple times. The scenario will be that the first run fetches the data defined in the configuration file, then the proceeding run retrieves the data from the endpoint of the last run until now. And finally the third execution will most probably fail, as only little seconds have been passed and most likely no data is available in such a short time window. Sadly, the api response in such cases with a **404** error code instead with a **200** and an empty response.
