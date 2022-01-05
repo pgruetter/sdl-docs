@@ -8,6 +8,8 @@ title: Custom Webservice
 * data pagination
 * protect resources using rate limiting 
 * different authentication mechanisms
+* filters for incremental load
+* well defined schema
 * ...
 
 As a result one is often better off writing a CustomWebserviceDataObject tailored to the API of interest than trying to write a generic WebserviceDataObejct that covers all needs. 
