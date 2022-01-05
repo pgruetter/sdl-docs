@@ -49,7 +49,7 @@ ext-departures {
 The Configuration for this new `ext-departures` includes the type of the Data Object, the base url, where we can fetch the departures, the number of retries, a list of query parameters and timeout options. To have more flexibility we can configure the query parameters now as options instead defining them in the query string. The connection timeout corresponds to the time we wait until the connection is established and the read timeout equals the time we wait until the webservice responds after the request has been submitted. If for example the request cannot be answered in the time configured, we try to automatically resend the request. How many times a failed request will be resend, is controlled by the nRetry parameter.
 
 :::warning
-  For the *begin* and *end* you should **not** choose an interval that is larger than a week. Otherwise the webservice will not respond. As the configuration must be as a unix timestamp, have a look at this [website](https://www.unixtimestamp.com/).
+  For the *begin* and *end* you should **not** choose an interval that is larger than a week. Otherwise the webservice will not respond. As the configuration must be as unix timestamp, have a look at this [website](https://www.unixtimestamp.com/).
 :::
 
 To make the Data Object of type `CustomWebserviceDataObject` available the following three files had to be included in our project:  
