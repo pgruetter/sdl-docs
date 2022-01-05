@@ -71,7 +71,7 @@ download-departures {
   }
 }
 ```
-The type is no longer `FileTransferAction`, but instead `CopyAction`. We also changed the feed name. For this part we are mainly interested exectuting this action.
+The type is no longer `FileTransferAction`, but instead a `CopyAction`, as our new `CustomWebserviceDataObject` converts the Json-Output of the Webservice into a Spark DataFrame. We also changed the feed name. For this part we are mainly interested executing this action.
 
 ## Try it out
 Re-Build the docker image to update the Scala files and then execute this specific feed using the command below
