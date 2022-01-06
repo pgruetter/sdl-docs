@@ -52,7 +52,7 @@ By changing the `saveMode` from the default Overwrite to Append mode we ensure t
 - deduplicate-departures:  
 Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder.
 :::caution
-Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window tha lies in the past week from now.
+Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window that lies in the past week from now.
 :::
 ## Define state variables
 To make use of the new configured execution mode, we need state variables. Add the following two variables to our CustomWebserviceDataObject.
