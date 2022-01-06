@@ -52,7 +52,7 @@ By changing the `saveMode` from the default Overwrite to Append mode we ensure t
 - deduplicate-departures:  
 Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder. Additionally the feed name was changed such we can this feed isolated.
 :::caution
-Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window tha lies in the past week from now.
+Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window that lies in the past week from now.
 :::
 ## Define state variables
 To make use of the new configured execution mode, we need state variables. Add the following two variables to our CustomWebserviceDataObject.
@@ -128,4 +128,4 @@ if(previousState.isEmpty){
   nextState = previousState.map(params => State(params.airport, now))
 }
 ```
-for the next state can be placed below the comment `// put simple nextState logic below`. Now you should again build the docker image and run it multiple times. The scenario will be that the first run fetches the data defined in the configuration file, then the proceeding run retrieves the data from the endpoint of the last run until now. And finally the third execution will most probably fail, as only little seconds have been passed and most likely no data is available in such a short time window. Sadly, the api response in such cases with a **404** error code instead with a **200** and an empty response.
+for the next state can be placed below the comment `// put simple nextState logic below`. Now you should again build the docker image and run it multiple times. The scenario will be that the first run fetches the data defined in the configuration file, then the proceeding run retrieves the data from the endpoint of the last run until now. And finally the third execution will most probably fail, as only little seconds have been passed and most likely no data is available in such a short time window. Unfortunately, the webservice on opensky-network.org responds with a **404** error code when no data is available, rather than a **200** and an empty response. Therefore, SDL gets a 404 and will fail the execution.
