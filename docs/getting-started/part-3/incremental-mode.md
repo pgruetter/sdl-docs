@@ -50,7 +50,7 @@ deduplicate-departures {
 By changing the `saveMode` from the default Overwrite to Append mode we ensure that data is incrementally appended to the already stored data instead of overwriting it.
 
 - deduplicate-departures:  
-Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder. Additionally the feed name was changed such we can this feed isolated.
+Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder. Additionally the feed name was changed to `deduplicate-departures` such that we can run this feed isolated.
 :::caution
 Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window that lies in the past week from now.
 :::
@@ -66,7 +66,7 @@ The corresponding `State` case class is defined as
   case class State(airport: String, nextBegin: Long)
 ```
 
-and should be added in the same file outside of the Data Object. For example, add it just below the import statements. 
+and should be added in the same file outside of the Data Object. For example, add it just below the already existing case classes. 
 The state stores always the airport and the nextBegin in unix time to tell the next run from where in time the new query has to start. 
 
 Concerning the state variables, `previousState` will basically be used for all the logic of the Data Object and `nextState` will be used to store the state for the next run.
