@@ -24,7 +24,7 @@ As such, we expect you to have some Scala and Spark know-how to follow along.
 
 It is also a good idea to configure a working development environment at this point. 
 In the [Technical Setup](../setup.md) chapter we briefly introduced how to use IntelliJ for development.
-That should greatly improve your development experience compared to manipulating the file in simple text editor.
+That should greatly improve your development experience compared to manipulating the file in a simple text editor.
 :::
 
 ## Starting point
@@ -56,15 +56,15 @@ ext-departures {
 }
 ```
   
-The Configuration for this new `ext-departures` includes the type of the Data Object, the expected schema, the base url from where we can fetch the departures, the number of retries, a list of query parameters and timeout options. 
-To have more flexibility, we can now configure the query parameters as options instead defining them in the query string. 
+The Configuration for this new `ext-departures` includes the type of the DataObject, the expected schema, the base url from where we can fetch the departures from, the number of retries, a list of query parameters and timeout options. 
+To have more flexibility, we can now configure the query parameters as options instead defining them in the query string.   
 The connection timeout corresponds to the time we wait until the connection is established and the read timeout equals the time we wait until the webservice responds after the request has been submitted. 
 If the request cannot be answered in the times configured, we try to automatically resend the request. 
 How many times a failed request will be resend, is controlled by the `nRetry` parameter.
 
 :::warning
 For the *begin* and *end* you should **not** choose an interval that is larger than a week. 
-Otherwise, the webservice will not respond. As the configuration must be as unix timestamp, have a look at this [website](https://www.unixtimestamp.com/).
+Otherwise, the webservice will not respond. The configuration expects unix timestamps, if you don't know what that means, have a look at this [website](https://www.unixtimestamp.com/).
 :::
 
 Note that we changed the type to `CustomWebserviceDataObject`.
@@ -92,7 +92,7 @@ The type is no longer `FileTransferAction` but a `CopyAction` instead, as our ne
 :::info
 `FileTransferAction`s are used, when your DataObjects reads an InputStream or writes an OutputStream like `WebserviceFileDataObject` or `SFtpFileRefDataObject`. 
 These transfer files one-to-one from input to output.  
-More often you work with one of the many provided `SparkAction` like the `CopyAction` shown here. 
+More often you work with one of the many provided `SparkAction`s like the `CopyAction` shown here. 
 They work by using Spark Data Frames under the hood. 
 :::
 
@@ -143,7 +143,7 @@ val departuresDf = departuresResponses.toDF("responseBinary")
 departuresDf
 ```
 Given the configured query parameters, the requests are first prepared using the request method. 
-If you have a look the implementation of the `request` method, you notice that we provide some ScalaJCustomWebserviceClient that is based on the *ScalaJ* library. 
+If you have a look at the implementation of the `request` method, you notice that we provide some ScalaJCustomWebserviceClient that is based on the *ScalaJ* library. 
 Also in the `request` method you can find the configuration for the number of retries.
 Afterwards, we create a data frame out of the response. 
 We implemented some transformations to flatten the result returned by the API.   
@@ -157,8 +157,8 @@ This function is a nice example of how to write your own *udf*.
 :::
 
 ## Get Data Frame
-In this section we will learn how we can avoid sending the request twice to the API using the execution phase information provided by the smart data lake. 
-We will now implement a simple *if ... else* statement that allows us to simply return an empty data frame with the correct schema in the **Init** phase and to only query the data in the **Exec** phase. 
+In this section we will learn how we can avoid sending the request twice to the API using the execution phase information provided by the Smart Data Lake Builder. 
+We will now implement a simple *if ... else* statement that allows us to return an empty data frame with the correct schema in the **Init** phase and to only query the data in the **Exec** phase. 
 This logic is implemented in the next code snipped and should replace the code currently enclosed between the two `// REPLACE BLOCK` comments.
 ```scala
 if(context.phase == ExecutionPhase.Init){
@@ -193,12 +193,17 @@ if(context.phase == ExecutionPhase.Init){
 Don't be confused about some comments in the code. They will be used in the next chapter. 
 If you rebuild the docker image and then restart the program you should see that we do not query the API twice anymore.
 
+
+:::tip
+Use the information of the `ExecutionPhase` in your custom implementations whenever you need to have different logic during the different phases.
+:::
+
 ## Preserve schema
 
-With this implementation, we write the spark data frame of our `CustomWebserviceDataObject` in Json format again. 
+With this implementation, we still write the Spark data frame of our `CustomWebserviceDataObject` in Json format. 
 As a consequence, we lose the schema definition when the data is read again.   
 To improve this behaviour, let's directly use the `ext-departures` as *inputId* in the `deduplicate-departures` action.
-The deduplicate action expects a DataFrame as input. Since our `CustomWebserviceDataObject` delivers that, there is no need for an intermediate step anymore.
+The deduplicate action expects a DataFrame as input. Since our `CustomWebserviceDataObject` delivers that, there is no need for an intermediate step anymore.  
 After you've changed that, the first transformer has to be rewritten as well, since the input has changed. 
 Please replace it with the implementation below
 ```
