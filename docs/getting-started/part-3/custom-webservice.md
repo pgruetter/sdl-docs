@@ -126,8 +126,6 @@ if(context.phase == ExecutionPhase.Init){
   // simply return an empty data frame
   Seq[String]().toDF("responseString")
     .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
-    .select(explode($"response").as("record"))
-    .select("record.*")
 } else {
   // given the query parameters, generate all requests
   val departureRequests = currentQueryParameters.map(
