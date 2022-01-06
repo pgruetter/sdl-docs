@@ -20,8 +20,37 @@ int-departures {
   saveMode = Append
 }
 ```
+```
+deduplicate-departures {
+  type = DeduplicateAction
+  executionMode = { type = DataObjectStateIncrementalMode }
+  inputId = ext-departures
+  outputId = int-departures
+  transformers = [{
+    type = SQLDfTransformer
+    code = "select ext_departures.*, date_format(from_unixtime(firstseen),'yyyyMMdd') dt from ext_departures"
+  },{
+    type = ScalaCodeDfTransformer
+    code = """
+      import org.apache.spark.sql.{DataFrame, SparkSession}
+      def transform(session: SparkSession, options: Map[String,String], df: DataFrame, dataObjectId: String) : DataFrame = {
+        import session.implicits._
+        df.dropDuplicates("icao24", "estdepartureairport", "dt")
+      }
+      // return as function
+      transform _
+    """
+  }]
+  metadata {
+    feed = deduplicate-departures
+  }
+  }
+```
 - int-departures:  
-By changing the `saveMode` from the default Overwrite to Append mode we ensure that data is incrementally appended to the already stored data instead of overwriting it. Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder.
+By changing the `saveMode` from the default Overwrite to Append mode we ensure that data is incrementally appended to the already stored data instead of overwriting it.
+
+- deduplicate-departures:  
+Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder.
 :::caution
 Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window tha lies in the past week from now.
 :::
@@ -37,7 +66,7 @@ The corresponding `State` case class is defined as
   case class State(airport: String, nextBegin: Long)
 ```
 
-and should be added in the same file outside of the Data Object. For example, add it just below the `Departure` case class. 
+and should be added in the same file outside of the Data Object. For example, add it just below the import statements. 
 The state stores always the airport and the nextBegin in unix time to tell the next run from where in time the new query has to start. 
 
 Concerning the state variables, `previousState` will basically be used for all the logic of the Data Object and `nextState` will be used to store the state for the next run.
@@ -65,9 +94,9 @@ This allows us to define the folder and name of the state file. To have access t
 
 ```
   docker build -t smart-data-lake/gs1 .
-  docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel download-departures --state-path /mnt/data/state -n getting-started
+  docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel deduplicate-departures --state-path /mnt/data/state -n getting-started
 ```
-Use now this slightly modified command to run the `download-departures` feed. Nothing should have changed so far, since we only read and write an empty state. 
+Use now this slightly modified command to run the `deduplicate-departures` feed. Nothing should have changed so far, since we only read and write an empty state. 
 You can can check that by opening the file `getting-started.<runId>.<attemptId>.json` and having a look at the field `dataObjectsState`. The stored state is currently empty. 
 In the next section we will assign a value to `nextState`, such that the is `dataObjectsState` is getting written. 
 The two variables `<runId>` and `<attemptId>` describe smart data like intrinsics. 

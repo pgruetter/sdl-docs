@@ -129,6 +129,8 @@ if(context.phase == ExecutionPhase.Init){
     .select(explode($"response").as("record"))
     .select("record.*")
 } else {
+  // place the new implementation of currentQueryParameters below this line
+
   // given the query parameters, generate all requests
   val departureRequests = currentQueryParameters.map(
     param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
@@ -142,11 +144,14 @@ if(context.phase == ExecutionPhase.Init){
     .select(explode($"response").as("record"))
     .select("record.*")
     .withColumn("created_at", current_timestamp())
+  
+  // put simple nextState logic below
+  
   // return
-  departuresDf
+   departuresDf
 }
 ```
-If you rebuild the docker image and then restart the program you should see that we do not query the API twice anymore.
+Don't be confused about some of the comments in the code. They will be of use in the next chapter. If you rebuild the docker image and then restart the program you should see that we do not query the API twice anymore.
 
 ## Preserve schema
 
