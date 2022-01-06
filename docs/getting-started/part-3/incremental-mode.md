@@ -9,28 +9,19 @@ The goal of this part is to use the Data Object's state, such that it can be use
 ## Define Data Objects
 We only make the following two minor changes in our config file:
 ```
-stg-departures {
-  type = JsonFileDataObject
+int-departures {
+  type = DeltaLakeTableDataObject
   path = "~{id}"
+  table {
+    db = "default"
+    name = "int_departures"
+    primaryKey = [icao24, estdepartureairport, dt]
+  }
   saveMode = Append
 }
 ```
-```
-download-departures {
-  type = CopyAction
-  executionMode = { type = DataObjectStateIncrementalMode }
-  inputId = ext-departures
-  outputId = stg-departures
-  metadata {
-    feed = download-departures
-  }
-}
-```
-- stg-departures:  
-By changing the `saveMode` from the default Overwrite to Append mode we ensure that data is incrementally appended to the already stored data instead of overwriting it.
-
-- download-departures:  
-Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder.
+- int-departures:  
+By changing the `saveMode` from the default Overwrite to Append mode we ensure that data is incrementally appended to the already stored data instead of overwriting it. Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder.
 :::caution
 Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window tha lies in the past week from now.
 :::

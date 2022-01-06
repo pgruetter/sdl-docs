@@ -126,6 +126,8 @@ if(context.phase == ExecutionPhase.Init){
   // simply return an empty data frame
   Seq[String]().toDF("responseString")
     .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+    .select(explode($"response").as("record"))
+    .select("record.*")
 } else {
   // given the query parameters, generate all requests
   val departureRequests = currentQueryParameters.map(
@@ -145,5 +147,16 @@ if(context.phase == ExecutionPhase.Init){
 }
 ```
 If you rebuild the docker image and then restart the program you should see that we do not query the API twice anymore.
+
+## Preserve schema
+
+With this implementation we write the spark data frame of our CustomWebserviceDataObject again in Json format. As a consequence, we loose the schema definition when the Data is read again. To mitigate this behaviour it is beneficial to directly use the `ext-departures` as *inputId* in the `deduplicate-departures` Action. Consequently the first transformer has to be rewritten as well, since the input has changed. Please replace it with the implementation below
+```
+{
+  type = SQLDfTransformer
+  code = "select ext_departures.*, date_format(from_unixtime(firstseen),'yyyyMMdd') dt from ext_departures"
+}
+```
+The old Action `download-departures` can be commented out or deleted.
 
 At the end your config file should look somehting like [this](../config-examples/application-download-part3-custom-webservice.conf) and the Data Object like [this](../config-examples/CustomWebserviceDataObject-1.scala).
