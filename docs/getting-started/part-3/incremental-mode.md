@@ -44,13 +44,13 @@ deduplicate-departures {
   metadata {
     feed = deduplicate-departures
   }
-  }
+}
 ```
 - int-departures:  
 By changing the `saveMode` from the default Overwrite to Append mode we ensure that data is incrementally appended to the already stored data instead of overwriting it.
 
 - deduplicate-departures:  
-Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder.
+Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder. Additionally the feed name was changed such we can this feed isolated.
 :::caution
 Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window tha lies in the past week from now.
 :::
@@ -75,11 +75,10 @@ Concerning the state variables, `previousState` will basically be used for all t
 To actually work with the state we need to implement the `CanCreateIncrementalOutput` trait. This can be done by adding `with CanCreateIncrementalOutput` to the `CustomWebserviceDataObject`. Consequently, we need to implement the functions `setState` and `getState` defined in the trait. 
 
 ```scala
-override def setState(state: Option[String])(implicit session: SparkSession, context: ActionPipelineContext): Unit = {
-  implicit val formats: Formats = DefaultFormats
-  dfCached = None
-  previousState = JsonMethods.parse(state.getOrElse[String]("[]")).extract[Seq[State]]
-}
+  override def setState(state: Option[String])(implicit context: ActionPipelineContext): Unit = {
+    implicit val formats: Formats = DefaultFormats
+    previousState = JsonMethods.parse(state.getOrElse[String]("[]")).extract[Seq[State]]
+  }
 
 override def getState: Option[String] = {
   implicit val formats: Formats = DefaultFormats

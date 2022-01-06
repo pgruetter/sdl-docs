@@ -32,12 +32,12 @@ ext-departures {
   nRetry = 5
   queryParameters = [{
     airport = "LSZB"
-    begin = 1630200800
-    end = 1630310979
+    begin = 1641393602
+    end = 1641483739
   },{
     airport = "EDDF"
-    begin = 1630200800
-    end = 1630310979
+    begin = 1641393602
+    end = 1641483739
   }]
   timeouts {
     connectionTimeoutMs = 200000
