@@ -8,9 +8,11 @@ import io.smartdatalake.util.hdfs.PartitionValues
 import io.smartdatalake.util.misc.SmartDataLakeLogger
 import io.smartdatalake.util.webservice.WebserviceMethod.WebserviceMethod
 import io.smartdatalake.util.webservice.{ScalaJCustomWebserviceClient, WebserviceException, WebserviceMethod}
-import io.smartdatalake.workflow.ActionPipelineContext
+import io.smartdatalake.workflow.{ActionPipelineContext, ExecutionPhase}
+import io.smartdatalake.workflow.dataobject.CustomWebserviceDataObject.extract
+import org.apache.spark.sql.types.{ArrayType, IntegerType, StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.json4s.jackson.{JsonMethods}
+import org.json4s.jackson.{JsonMethods, Serialization}
 import org.json4s.{DefaultFormats, Formats}
 
 import scala.annotation.tailrec
@@ -20,24 +22,12 @@ import java.time.Instant
 case class HttpTimeoutConfig(connectionTimeoutMs: Int, readTimeoutMs: Int)
 case class DepartureQueryParameters(airport: String, begin: Long, end: Long)
 
-case class Departure(icao24: String,
-                     firstSeen: String,
-                     estDepartureAirport: String,
-                     lastSeen: Int,
-                     estArrivalAirport: String,
-                     callsign: String,
-                     estDepartureAirportHorizDistance: Option[Int],
-                     estDepartureAirportVertDistance: Option[Int],
-                     estArrivalAirportHorizDistance: Option[Int],
-                     estArrivalAirportVertDistance: Option[Int],
-                     departureAirportCandidatesCount: Int,
-                     arrivalAirportCandidatesCount: Int)
-
 /**
  * [[DataObject]] to call webservice and return response as a DataFrame
  */
 case class CustomWebserviceDataObject(override val id: DataObjectId,
                                       override val metadata: Option[DataObjectMetadata] = None,
+                                      schema: Option[String],
                                       additionalHeaders: Map[String,String] = Map(),
                                       queryParameters: Option[Seq[DepartureQueryParameters]] = None,
                                       timeouts: Option[HttpTimeoutConfig] = None,
@@ -47,13 +37,14 @@ case class CustomWebserviceDataObject(override val id: DataObjectId,
                                      (@transient implicit val instanceRegistry: InstanceRegistry)
   extends DataObject with CanCreateDataFrame with SmartDataLakeLogger {
 
-  private var dfCached : Option[DataFrame] = None
-
-
-  private val now = Instant.now.getEpochSecond
   // check whether there are query parameters available from the config
   if(queryParameters == None){
     throw new ConfigurationException(s"($id) no query parameters available")
+  }
+
+  // check whether a schema available from the config
+  if(schema == None){
+    throw new ConfigurationException(s"($id) no schema has been found available")
   }
 
   // if we have query parameters in the state we will use them from now on
@@ -80,28 +71,39 @@ case class CustomWebserviceDataObject(override val id: DataObjectId,
     }
   }
 
-  override def getDataFrame(partitionValues: Seq[PartitionValues])(implicit session: SparkSession, context: ActionPipelineContext): DataFrame = {
+  override def getDataFrame(partitionValues: Seq[PartitionValues])(implicit context: ActionPipelineContext): DataFrame = {
     import org.apache.spark.sql.functions._
     implicit val formats: Formats = DefaultFormats
+    val session = context.sparkSession
     import session.implicits._
 
-    if(dfCached.isEmpty) {
+    val byte2String = udf((payload: Array[Byte]) => new String(payload))
+
+    // REPLACE BLOCK
+    if(context.phase == ExecutionPhase.Init){
+      // simply return an empty data frame
+      Seq[String]().toDF("responseString")
+        .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+        .select(explode($"response").as("record"))
+        .select("record.*")
+    } else {
       // given the query parameters, generate all requests
       val departureRequests = currentQueryParameters.map(
         param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
       )
-
-      // make request
+      // make requests
       val departuresResponses = departureRequests.map(request(_))
-      // deserialize the result into a sequence of Departure objects
-      val departures = departuresResponses.flatMap(res => JsonMethods.parse(new String(res)).extract[Seq[Departure]])
-      // create dataframe and add created_at column with the current timestamp
-      val departuresDf = departures.toDF
+      // create dataframe with the correct schema and add created_at column with the current timestamp
+      val departuresDf = departuresResponses.toDF("responseBinary")
+        .withColumn("responseString", byte2String($"responseBinary"))
+        .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+        .select(explode($"response").as("record"))
+        .select("record.*")
         .withColumn("created_at", current_timestamp())
-
-      dfCached = Some(departuresDf)
+      // return
+      departuresDf
     }
-    dfCached.get
+    // REPLACE BLOCK
   }
 
   override def factory: FromConfigFactory[DataObject] = CustomWebserviceDataObject

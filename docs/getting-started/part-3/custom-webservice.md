@@ -27,26 +27,26 @@ We start by rewriting the existing `ext-departures` Data Object. In the configur
 ```
 ext-departures {
   type = CustomWebserviceDataObject
+  schema = """array< struct< icao24: string, firstSeen: integer, estDepartureAirport: string, lastSeen: integer, estArrivalAirport: string, callsign: string, estDepartureAirportHorizDistance: integer, estDepartureAirportVertDistance: integer, estArrivalAirportHorizDistance: integer, estArrivalAirportVertDistance: integer, departureAirportCandidatesCount: integer, arrivalAirportCandidatesCount: integer >>"""
   baseUrl = "https://opensky-network.org/api/flights/departure"
   nRetry = 5
   queryParameters = [{
-    airport="LSZB"
-    begin=1639609200
-    end=1639868400
+    airport = "LSZB"
+    begin = 1630200800
+    end = 1630310979
   },{
-    airport="EDDF"
-    begin=1639609200
-    end=1639868400
+    airport = "EDDF"
+    begin = 1630200800
+    end = 1630310979
   }]
   timeouts {
-    connectionTimeoutMs=200000
-    readTimeoutMs=200000
+    connectionTimeoutMs = 200000
+    readTimeoutMs = 200000
   }
 }
 ```
-
   
-The Configuration for this new `ext-departures` includes the type of the Data Object, the base url, where we can fetch the departures, the number of retries, a list of query parameters and timeout options. To have more flexibility we can configure the query parameters now as options instead defining them in the query string. The connection timeout corresponds to the time we wait until the connection is established and the read timeout equals the time we wait until the webservice responds after the request has been submitted. If for example the request cannot be answered in the time configured, we try to automatically resend the request. How many times a failed request will be resend, is controlled by the nRetry parameter.
+The Configuration for this new `ext-departures` includes the type of the Data Object, the expected schema, the base url, where we can fetch the departures, the number of retries, a list of query parameters and timeout options. To have more flexibility we can configure the query parameters now as options instead defining them in the query string. The connection timeout corresponds to the time we wait until the connection is established and the read timeout equals the time we wait until the webservice responds after the request has been submitted. If for example the request cannot be answered in the time configured, we try to automatically resend the request. How many times a failed request will be resend, is controlled by the nRetry parameter.
 
 :::warning
   For the *begin* and *end* you should **not** choose an interval that is larger than a week. Otherwise the webservice will not respond. As the configuration must be as unix timestamp, have a look at this [website](https://www.unixtimestamp.com/).
@@ -96,77 +96,56 @@ Having a look at the log, something similar should appear on your screen.
 ```
 It is important to notice that the two requests for each airport to the API were not send only once, but twice. This stems from the fact that the method `getDataFrame` of the Data Object 
 is called twice in the DAG execution of the Smart Data Lake Builder: Once during the Init Phase, and once again during the Exec Phase. See [the end of the get Airports step](../get-airports) for a more information on that. Before we address and mitigate this behaviour in the next section, we have a look at the `getDataFrame` method and the currently implemented logic displayed in the next code section.
-```
-  // given the query parameters, generate all requests
-  val departureRequests = currentQueryParameters.map(
-    param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
-  )
-  // make request
-  val departuresResponses = departureRequests.map(request(_))
-  // deserialize the result into a sequence of Departure objects
-  val departures = departuresResponses.flatMap(res => JsonMethods.parse(new String(res)).extract[Seq[Departure]])
-  // create dataframe and add created_at column with the current timestamp
-  val departuresDf = departures.toDF
-    .withColumn("created_at", current_timestamp())
-```
-Given the configured query parameters, the requests are first prepared using the request method. If you have a look the implementation of the  `request` method, you notice that we provide some ScalaJCustomWebserviceClient that is based on the *ScalaJ* library. It is also in the `request` method where it one can configure the amount of retries. Afterwards we deserialize the return value from the webservice into the definded case class `Departure`. This result is used to create a dataFrame with the added column *created_at*.  
-
-## Get Data Frame
-In this section we will learn how we can avoid sending the requests twice to the API using the execution phase information provided by the smart data lake. We will now implement a simple *if ... else* statement that allows us to simply define the schema of the expected response in the **Init** phase and to actually query the data in the **Exec** phase. We start by defining the *schema* instance variable below
 ```scala
-private var schema : Option[ArrayType] = None
+// given the query parameters, generate all requests
+val departureRequests = currentQueryParameters.map(
+  param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
+)
+// make requests
+val departuresResponses = departureRequests.map(request(_))
+// create dataframe with the correct schema and add created_at column with the current timestamp
+val departuresDf = departuresResponses.toDF("responseBinary")
+  .withColumn("responseString", byte2String($"responseBinary"))
+  .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+  .select(explode($"response").as("record"))
+  .select("record.*")
+  .withColumn("created_at", current_timestamp())
+// return
+departuresDf
 ```
-in the beginning of the class `CustomWebserviceDataObject`. The previously discussed logic is enclosed in two `// REPLACE BLOCK` comments. Find this section and replace it with the code below
-```scala
-if(context.phase == ExecutionPhase.Init){
-  import org.apache.spark.sql.types._
-  // define schema
-  schema = Some(ArrayType(StructType(Array(
-    StructField("icao24", StringType),
-    StructField("firstSeen", IntegerType),
-    StructField("estDepartureAirport", StringType),
-    StructField("lastSeen", IntegerType),
-    StructField("estArrivalAirport", StringType),
-    StructField("callsign", StringType),
-    StructField("estDepartureAirportHorizDistance", IntegerType),
-    StructField("estDepartureAirportVertDistance", IntegerType),
-    StructField("estArrivalAirportHorizDistance", IntegerType),
-    StructField("estArrivalAirportVertDistance", IntegerType),
-    StructField("departureAirportCandidatesCount", IntegerType),
-    StructField("arrivalAirportCandidatesCount", IntegerType)
-  ))))
-
-  // simply return an empty data frame
-  session.emptyDataFrame
-} else {
-  // place the new implementation of currentQueryParameters below     
-
-  // given the query parameters, generate all requests
-  val departureRequests = currentQueryParameters.map(
-    param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
-  )
-  // make request
-  val departuresResponses = departureRequests.map(request(_))
-
-  // create dataframe with the correct schema and add created_at column with the current timestamp
-  val departuresDf = departuresResponses.toDF("responseBinary")
-    .withColumn("responseString", byte2String($"responseBinary"))
-    .select(from_json($"responseString", schema.get).as("response"))
-    .withColumn("created_at", current_timestamp())
-    .select(explode($"response").as("record"), $"created_at")
-    .select("record.*", "created_at")
-  
-  // put simple nextState logic below
-
-  departuresDf
-}
-```
-We see that we we need to so some transformations to flatten the result returned by the API. Spark has lots of *User-Defined Functions* (short **udf**) that can be used out of the box. We used such a column based function *from_json* to parse the response string with the right schema.
+Given the configured query parameters, the requests are first prepared using the request method. If you have a look the implementation of the  `request` method, you notice that we provide some ScalaJCustomWebserviceClient that is based on the *ScalaJ* library. It is also in the `request` method where it one can configure the amount of retries. Afterwards we create a data frame out of the response. We see that we we need to so some transformations to flatten the result returned by the API. Spark has lots of *User-Defined Functions* (short **udf**) that can be used out of the box. We used such a column based function *from_json* to parse the response string with the right schema. At the end we return the freshly created data frame `departuresDf`.
 
 :::tip
 The return type of the response is `Array[Byte]`. To convert that to `Array[String]` the *udf* function `byte2String `has been used. This function is a nice example how one can define such *udfs* by oneselfs.
 :::
 
+## Get Data Frame
+In this section we will learn how we can avoid sending the requests twice to the API using the execution phase information provided by the smart data lake. We will now implement a simple *if ... else* statement that allows us to simply return a empty data frame with the correct schema in the **Init** phase and to actually query the data in the **Exec** phase. This logic is implemented in the next code snipped and should replace the code currently enclosed between the two `// REPLACE BLOCK` comments.
+```scala
+if(context.phase == ExecutionPhase.Init){
+  // simply return an empty data frame
+  Seq[String]().toDF("responseString")
+    .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+    .select(explode($"response").as("record"))
+    .select("record.*")
+} else {
+  // given the query parameters, generate all requests
+  val departureRequests = currentQueryParameters.map(
+    param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
+  )
+  // make requests
+  val departuresResponses = departureRequests.map(request(_))
+  // create dataframe with the correct schema and add created_at column with the current timestamp
+  val departuresDf = departuresResponses.toDF("responseBinary")
+    .withColumn("responseString", byte2String($"responseBinary"))
+    .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+    .select(explode($"response").as("record"))
+    .select("record.*")
+    .withColumn("created_at", current_timestamp())
+  // return
+  departuresDf
+}
+```
 If you rebuild the docker image and then restart the program you should see that we do not query the API twice anymore.
 
 At the end your config file should look somehting like [this](../config-examples/application-download-part3-custom-webservice.conf) and the Data Object like [this](../config-examples/CustomWebserviceDataObject-1.scala).
