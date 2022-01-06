@@ -87,6 +87,8 @@ case class CustomWebserviceDataObject(override val id: DataObjectId,
         .select(explode($"response").as("record"))
         .select("record.*")
     } else {
+      // place the new implementation of currentQueryParameters below this line
+
       // given the query parameters, generate all requests
       val departureRequests = currentQueryParameters.map(
         param => s"${baseUrl}?airport=${param.airport}&begin=${param.begin}&end=${param.end}"
@@ -100,6 +102,9 @@ case class CustomWebserviceDataObject(override val id: DataObjectId,
         .select(explode($"response").as("record"))
         .select("record.*")
         .withColumn("created_at", current_timestamp())
+
+      // put simple nextState logic below
+
       // return
       departuresDf
     }
