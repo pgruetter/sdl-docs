@@ -215,6 +215,6 @@ Please replace it with the implementation below
   code = "select ext_departures.*, date_format(from_unixtime(firstseen),'yyyyMMdd') dt from ext_departures"
 }
 ```
-The old action `download-departures` can be commented out or deleted as it's not needed anymore.
+The old action `download-departures` can be deleted as it's not needed anymore.
 
 At the end, your config file should look something like [this](../config-examples/application-download-part3-custom-webservice.conf) and the DataObject like [this](../config-examples/CustomWebserviceDataObject-1.scala).

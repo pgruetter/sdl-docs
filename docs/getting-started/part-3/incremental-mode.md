@@ -117,7 +117,7 @@ To have access to the state file, we specify the path to be in an already mounte
 Use this slightly modified command to run the `deduplicate-departures` feed. 
 Nothing should have changed so far, since we only read and write an empty state.   
 You can verify this by opening the file `getting-started.<runId>.<attemptId>.json` and having a look at the field `dataObjectsState`. The stored state is currently empty. 
-In the next section, we will assign a value to `nextState`, such that the is `dataObjectsState` is getting written. 
+In the next section, we will assign a value to `nextState`, such that the `DataObject's` state is written. 
 
 :::info
 The same state file is used by Smart Data Lake Builder to enable automatic recoveries of failed jobs.
