@@ -52,7 +52,7 @@ By changing the `saveMode` from the default Overwrite to Append mode we ensure t
 - deduplicate-departures:  
 Adding the executionMode `DataObjectStateIncrementalMode` to the Data Object allows us to store Information about the Data Object's state in the global state file that is written after each run of the Smart Data Lake Builder. Additionally the feed name was changed to `deduplicate-departures` such that we can run this feed isolated.
 :::caution
-Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. So please choose a time window that lies in the past week from now.
+Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution. If the time difference between the last execution and the current execution time is larger than a week, we will query the next four days since the last execution time. Otherwise we query the data from the last execution until now.
 :::
 ## Define state variables
 To make use of the new configured execution mode, we need state variables. Add the following two variables to our CustomWebserviceDataObject.
@@ -115,10 +115,21 @@ private val now = Instant.now.getEpochSecond
 ``` 
 just below the `nextState` variable. Then modify the `currentQueryParameters` variable according to
 ```scala
-// if we have query parameters in the state we will use them from now on
-val currentQueryParameters = if (previousState.isEmpty) queryParameters.get else previousState.map{
-  x => DepartureQueryParameters(x.airport, x.nextBegin, now)
+val checkQueryParameters = (queryParameters: Seq[DepartureQueryParameters]) => {
+  queryParameters.map{
+    param =>
+      val diff = param.end - param.begin
+      if(diff / (3600*24) > 7) {
+        param.copy(end=param.begin+3600*24*4)
+      } else {
+        param
+      }
+  }
 }
+// if we have query parameters in the state we will use them from now on
+var currentQueryParameters = if (previousState.isEmpty) checkQueryParameters(queryParameters.get) else checkQueryParameters(previousState.map{
+  x => DepartureQueryParameters(x.airport, x.nextBegin, now)
+})
 ```
 and move it below the comment `// place the new implementation of currentQueryParameters below this line`, which can be found in the `getDataFrame` method. The implemented logic 
 ```scala
@@ -128,4 +139,4 @@ if(previousState.isEmpty){
   nextState = previousState.map(params => State(params.airport, now))
 }
 ```
-for the next state can be placed below the comment `// put simple nextState logic below`. Now you should again build the docker image and run it multiple times. The scenario will be that the first run fetches the data defined in the configuration file, then the proceeding run retrieves the data from the endpoint of the last run until now. And finally the third execution will most probably fail, as only little seconds have been passed and most likely no data is available in such a short time window. Unfortunately, the webservice on opensky-network.org responds with a **404** error code when no data is available, rather than a **200** and an empty response. Therefore, SDL gets a 404 and will fail the execution.
+for the next state can be placed below the comment `// put simple nextState logic below`. Now you should again build the docker image and run it multiple times. The scenario will be that the first run fetches the data defined in the configuration file, then the proceeding run retrieves the data from the endpoint of the last run until now. If this time difference is larger than a week, the program only queries the next four days since the last execution. If there is no data available in a time window, because only little seconds have been passed since the last execution, the execution will fail, since the webservice on opensky-network.org responds with a **404** error code when no data is available, rather than a **200** and an empty response. Therefore, SDL gets a 404 and will fail the execution.
