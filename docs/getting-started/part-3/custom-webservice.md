@@ -103,6 +103,7 @@ We also changed the feed name. For this part we are mainly interested in executi
 ## Try it out
 Re-build the docker image to update the Scala files and then execute this specific feed using the command below
 ```
+  docker run -v ${PWD}:/mnt/project -v ${PWD}/.mvnrepo:/mnt/.mvnrepo maven:3.6.0-jdk-11-slim -- mvn -f /mnt/project/pom.xml "-Dmaven.repo.local=/mnt/.mvnrepo" package
   docker build -t smart-data-lake/gs1 .
   docker run --rm -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel download-departures
 ```
