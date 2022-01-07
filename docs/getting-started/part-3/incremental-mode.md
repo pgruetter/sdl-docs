@@ -169,7 +169,10 @@ if(previousState.isEmpty){
 ```
 for the next state can be placed below the comment `// put simple nextState logic below`. 
 
-Build the docker image again and execute it multiple times. The scenario will be that the first run fetches the data defined in the configuration file, then the proceeding run retrieves the data from the endpoint of the last run until now. If this time difference is larger than a week, the program only queries the next four days since the last execution. If there is no data available in a time window, because only little seconds have been passed since the last execution, the execution will fail.
+Build the docker image again and execute it multiple times. 
+The scenario will be that the first run fetches the data defined in the configuration file, then the proceeding run retrieves the data from the endpoint of the last run until now. 
+If this time difference is larger than a week, the program only queries the next four days since the last execution.
+If there is no data available in a time window, because only a few seconds have passed since the last execution, the execution will fail.
 
 :::info
 Unfortunately, the webservice on opensky-network.org responds with a **404** error code when no data is available, rather than a **200** and an empty response. 

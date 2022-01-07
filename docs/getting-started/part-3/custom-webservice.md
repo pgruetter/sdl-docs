@@ -62,9 +62,11 @@ The connection timeout corresponds to the time we wait until the connection is e
 If the request cannot be answered in the times configured, we try to automatically resend the request. 
 How many times a failed request will be resend, is controlled by the `nRetry` parameter.
 
-:::warning
-For the *begin* and *end* you should **not** choose an interval that is larger than a week. 
-Otherwise, the webservice will not respond. The configuration expects unix timestamps, if you don't know what that means, have a look at this [website](https://www.unixtimestamp.com/).
+:::info
+The *begin* and *end* can now be configured for each airport separatly. 
+The configuration expects unix timestamps, if you don't know what that means, have a look at this [website](https://www.unixtimestamp.com/).
+The webservice will not respond if the interval is larger than a week.
+Hence, we enforce the rule that if the chosen interval is larger, we query only the next four days given the *begin* configuration. T
 :::
 
 Note that we changed the type to `CustomWebserviceDataObject`.
