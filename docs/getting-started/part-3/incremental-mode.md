@@ -142,23 +142,11 @@ private val now = Instant.now.getEpochSecond
 ``` 
 just below the `nextState` variable. Then modify the `currentQueryParameters` variable according to
 ```scala
-val checkQueryParameters = (queryParameters: Seq[DepartureQueryParameters]) => {
-  queryParameters.map{
-    param =>
-      val diff = param.end - param.begin
-      if(diff / (3600*24) > 7) {
-        param.copy(end=param.begin+3600*24*4)
-      } else {
-        param
-      }
-  }
-}
 // if we have query parameters in the state we will use them from now on
 var currentQueryParameters = if (previousState.isEmpty) checkQueryParameters(queryParameters.get) else checkQueryParameters(previousState.map{
   x => DepartureQueryParameters(x.airport, x.nextBegin, now)
 })
 ```
-and move it below the comment `// place the new implementation of currentQueryParameters below this line`, which can be found in the `getDataFrame` method. 
 The implemented logic 
 ```scala
 if(previousState.isEmpty){

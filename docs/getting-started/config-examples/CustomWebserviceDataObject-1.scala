@@ -47,9 +47,6 @@ case class CustomWebserviceDataObject(override val id: DataObjectId,
     throw new ConfigurationException(s"($id) no schema has been found available")
   }
 
-  // if we have query parameters in the state we will use them from now on
-  val currentQueryParameters = queryParameters.get
-
   @tailrec
   private def request(url: String, method: WebserviceMethod = WebserviceMethod.Get, body: String = "", retry: Int = nRetry) : Array[Byte] = {
     val webserviceClient = ScalaJCustomWebserviceClient(this, Some(url))
@@ -79,15 +76,29 @@ case class CustomWebserviceDataObject(override val id: DataObjectId,
 
     val byte2String = udf((payload: Array[Byte]) => new String(payload))
 
+    // if time interval is more than a week, set end config to 4 days after begin
+    val checkQueryParameters = (queryParameters: Seq[DepartureQueryParameters]) => {
+      queryParameters.map{
+        param =>
+          val diff = param.end - param.begin
+          if(diff / (3600*24) >= 7) {
+            param.copy(end=param.begin+3600*24*4)
+          } else {
+            param
+          }
+      }
+    }
+
     // REPLACE BLOCK
     if(context.phase == ExecutionPhase.Init){
-      // simply return an empty data frame
-      Seq[String]().toDF("responseString")
-        .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
-        .select(explode($"response").as("record"))
-        .select("record.*")
+    // simply return an empty data frame
+    Seq[String]().toDF("responseString")
+      .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+      .select(explode($"response").as("record"))
+      .select("record.*")
     } else {
-      // place the new implementation of currentQueryParameters below this line
+      // use the queryParameters from the config
+      val currentQueryParameters = checkQueryParameters(queryParameters.get)
 
       // given the query parameters, generate all requests
       val departureRequests = currentQueryParameters.map(
@@ -102,14 +113,14 @@ case class CustomWebserviceDataObject(override val id: DataObjectId,
         .select(explode($"response").as("record"))
         .select("record.*")
         .withColumn("created_at", current_timestamp())
-
+      
       // put simple nextState logic below
-
+      
       // return
       departuresDf
     }
-    // REPLACE BLOCK
-  }
+      // REPLACE BLOCK
+    }
 
   override def factory: FromConfigFactory[DataObject] = CustomWebserviceDataObject
 }

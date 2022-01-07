@@ -170,7 +170,8 @@ if(context.phase == ExecutionPhase.Init){
     .select(explode($"response").as("record"))
     .select("record.*")
 } else {
-  // place the new implementation of currentQueryParameters below this line
+  // use the queryParameters from the config
+  val currentQueryParameters = checkQueryParameters(queryParameters.get)
 
   // given the query parameters, generate all requests
   val departureRequests = currentQueryParameters.map(
