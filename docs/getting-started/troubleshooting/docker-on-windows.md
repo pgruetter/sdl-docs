@@ -19,7 +19,7 @@ Install podman on WSL2 Ubuntu:
     sudo apt-get -y install podman
 
 ## Using podman compose
-For [part 2 of this guide](delta-lake-format), you need docker compose.
+For [part 2 of this guide](../part-2/delta-lake-format.md), you need docker compose.
 For Windows, you can use the altenative podman compose.
 Install podman-compose for podman in WSL2:
 
