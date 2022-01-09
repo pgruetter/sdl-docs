@@ -72,6 +72,9 @@ module.exports = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Smart Data Lake, Built with Docusaurus.`,
     },
+    prism: {
+      additionalLanguages: ['scala'],
+    },
   },
   presets: [
     [
