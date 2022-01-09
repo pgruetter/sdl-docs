@@ -42,11 +42,11 @@ download-deduplicate-departures {
 }
 ```
 - Adding the executionMode `DataObjectStateIncrementalMode` will enable DataObject incremental mode. With every run the input DataObject will only return new data in this mode.
-The DataObject safes its state in the global state file that is written after each run of the Smart Data Lake Builder. You haven't worked with this state file before, more on that later.
+The DataObject saves its state in the global state file that is written after each run of the Smart Data Lake Builder. You haven't worked with this state file before, more on that later.
 - `mergeModeEnable = true` tells DeduplicateAction to merge changed data into the output DataObject, instead of overwriting the whole DataObject. This is especially useful if incoming data is read incrementally.
 The output DataObject must implement CanMergeDataFrame interface (also called trait in Scala) for this. DeltaLakeTableDataObject will then create a complex SQL-Upsert statement to merge new and changed data into existing output data.
 - By default DeduplicateAction updates column dl_captured in the output for every record it receives. To reduce the number of updated records, `updateCapturedColumnOnlyWhenChanged = true` can be set.
-In this case column dl_captured is only update in the output, when some attribute of the record changed.
+In this case column dl_captured is only updated in the output, when some attribute of the record changed.
 
 :::info
 Execution mode is also something that is going to be explained in more detail later.
@@ -55,7 +55,7 @@ In this case, we tell Smart Data Lake Builder to load data based on the state st
 :::
 
 :::caution
-Remeber that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution.
+Remember that the time interval in `ext-departures` should not be larger than a week. As mentioned, we will implement a simple incremental query logic that always queries from the last execution time until the current execution.
 If the time difference between the last execution and the current execution time is larger than a week, we will query the next four days since the last execution time. Otherwise we query the data from the last execution until now.
 :::
 
