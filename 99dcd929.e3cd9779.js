@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[20],{87:function(s){s.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Blog Test","permalink":"/sdl-docs/blog/first"}]}')}}]);
