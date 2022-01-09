@@ -16,7 +16,7 @@ title: Custom Webservice
 * ...
 
 Smart Data Lake Builder can not cover all these various needs in a generic `WebserviceDataObject`, which is why we have to write our own `CustomWebserviceDataObject`. 
-The goal of this part is to learn how such a CustomWebserviceDataObject can be implemented.
+The goal of this part is to learn how such a CustomWebserviceDataObject can be implemented in Scala.
 
 :::info
 Other than part 1 and 2, we are writing customized Scala classes in part 3 and making use of Apache Spark features.
@@ -70,11 +70,9 @@ Hence, we enforce the rule that if the chosen interval is larger, we query only 
 :::
 
 Note that we changed the type to `CustomWebserviceDataObject`.
-This is not a standard Smart Data Lake Builder type and only works because we already included the following three files for you:  
+This is not a standard Smart Data Lake Builder type and only works because we already included the following file for you:  
   - ./src/scala/io/smartdatalake/workflow/dataobject/CustomWebserviceDataObject.scala
-  - ./src/scala/io/smartdatalake/util/webservice/ScalaCustomWebserviceClient.scala
-  - ./src/scala/io/smartdatalake/util/webservice/WebserviceMethod.scala
-
+  
 In this part we will work exclusively on the `CustomWebserviceDataObject.scala` file.
 
 ## Define Action
@@ -85,7 +83,7 @@ download-departures {
   inputId = ext-departures
   outputId = stg-departures
   metadata {
-    feed = download-departures
+    feed = compute
   }
 }
 ```
@@ -98,15 +96,20 @@ More often you work with one of the many provided `SparkAction`s like the `CopyA
 They work by using Spark Data Frames under the hood. 
 :::
 
-We also changed the feed name. For this part we are mainly interested in executing this specific action.
-
 ## Try it out
-Re-build the docker image to update the Scala files and then execute this specific feed using the command below
+If this is the first time you're trying out SDL with this version of the tutorial, you need to first build the SDL docker image with the command below.
+Note that this docker image now only includes SDL libraries, and no configuration or code from this project.
 ```
-  docker run -v ${PWD}:/mnt/project -v ${PWD}/.mvnrepo:/mnt/.mvnrepo maven:3.6.0-jdk-11-slim -- mvn -f /mnt/project/pom.xml "-Dmaven.repo.local=/mnt/.mvnrepo" package
   docker build -t smart-data-lake/gs1 .
-  docker run --rm -v ${PWD}/target:/mnt/lib -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel download-departures
 ```
+Then you can compile and execute the code of this project with the following commands.
+Note that parameter `--feed-sel` only selects `download-departures` as Action for execution. 
+```
+  mkdir .mvnrepo
+  docker run -v ${PWD}:/mnt/project -v ${PWD}/.mvnrepo:/mnt/.mvnrepo maven:3.6.0-jdk-11-slim -- mvn -f /mnt/project/pom.xml "-Dmaven.repo.local=/mnt/.mvnrepo" package
+  docker run --rm -v ${PWD}/target:/mnt/lib -v ${PWD}/data:/mnt/data -v ${PWD}/config:/mnt/config smart-data-lake/gs1:latest --config /mnt/config --feed-sel ids:download-departures
+```
+
 Nothing should have changed. You should again receive data as json files in the corresponding `stg-departures` folder. 
 But except of receiving the departures for only one airport, the DataObject returns the departures for all configured airports. 
 In this specific case this would be *LSZB* and *EDDF* within the corresponding time window.
@@ -138,7 +141,7 @@ val departuresResponses = departureRequests.map(request(_))
 // create dataframe with the correct schema and add created_at column with the current timestamp
 val departuresDf = departuresResponses.toDF("responseBinary")
   .withColumn("responseString", byte2String($"responseBinary"))
-  .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+  .select(from_json($"responseString", DataType.fromDDL(schema)).as("response"))
   .select(explode($"response").as("record"))
   .select("record.*")
   .withColumn("created_at", current_timestamp())
@@ -150,13 +153,13 @@ If you have a look at the implementation of the `request` method, you notice tha
 Also in the `request` method you can find the configuration for the number of retries.
 Afterwards, we create a data frame out of the response. 
 We implemented some transformations to flatten the result returned by the API.   
-Spark has lots of *User-Defined Functions* (short **udf**) that can be used out of the box. 
+Spark has lots of *Functions* that can be used out of the box. 
 We used such a column based function *from_json* to parse the response string with the right schema. 
 At the end we return the freshly created data frame `departuresDf`.
 
 :::tip
-The return type of the response is `Array[Byte]`. To convert that to `Array[String]` the *udf* `byte2String` has been used, which is declared inside the getDataFrame method.
-This function is a nice example of how to write your own *udf*.
+The return type of the response is `Array[Byte]`. To convert that to `Array[String]` a *User Defined Function* (also called *UDF*) `byte2String` has been used, which is declared inside the getDataFrame method.
+This function is a nice example of how to write your own *UDF*.
 :::
 
 ## Get Data Frame
@@ -167,9 +170,10 @@ This logic is implemented in the next code snipped and should replace the code c
 if(context.phase == ExecutionPhase.Init){
   // simply return an empty data frame
   Seq[String]().toDF("responseString")
-    .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+    .select(from_json($"responseString", DataType.fromDLL(schema)).as("response"))
     .select(explode($"response").as("record"))
     .select("record.*")
+    .withColumn("created_at", current_timestamp())
 } else {
   // use the queryParameters from the config
   val currentQueryParameters = checkQueryParameters(queryParameters.get)
@@ -183,7 +187,7 @@ if(context.phase == ExecutionPhase.Init){
   // create dataframe with the correct schema and add created_at column with the current timestamp
   val departuresDf = departuresResponses.toDF("responseBinary")
     .withColumn("responseString", byte2String($"responseBinary"))
-    .select(from_json($"responseString", schema.get, Map[String,String]()).as("response"))
+    .select(from_json($"responseString", DataType.fromDDL(schema)).as("response"))
     .select(explode($"response").as("record"))
     .select("record.*")
     .withColumn("created_at", current_timestamp())
@@ -197,7 +201,6 @@ if(context.phase == ExecutionPhase.Init){
 Don't be confused about some comments in the code. They will be used in the next chapter. 
 If you rebuild the docker image and then restart the program you should see that we do not query the API twice anymore.
 
-
 :::tip
 Use the information of the `ExecutionPhase` in your custom implementations whenever you need to have different logic during the different phases.
 :::
@@ -206,7 +209,7 @@ Use the information of the `ExecutionPhase` in your custom implementations whene
 
 With this implementation, we still write the Spark data frame of our `CustomWebserviceDataObject` in Json format. 
 As a consequence, we lose the schema definition when the data is read again.   
-To improve this behaviour, let's directly use the `ext-departures` as *inputId* in the `deduplicate-departures` action.
+To improve this behaviour, let's directly use the `ext-departures` as *inputId* in the `deduplicate-departures` action, and rename the Action as `download-deduplicate-departures`.
 The deduplicate action expects a DataFrame as input. Since our `CustomWebserviceDataObject` delivers that, there is no need for an intermediate step anymore.  
 After you've changed that, the first transformer has to be rewritten as well, since the input has changed. 
 Please replace it with the implementation below
@@ -216,6 +219,6 @@ Please replace it with the implementation below
   code = "select ext_departures.*, date_format(from_unixtime(firstseen),'yyyyMMdd') dt from ext_departures"
 }
 ```
-The old action `download-departures` can be deleted as it's not needed anymore.
+The old Action `download-departures` and the DataObject `stg-departures` can be deleted, as it's not needed anymore.
 
-At the end, your config file should look something like [this](../config-examples/application-download-part3-custom-webservice.conf) and the DataObject like [this](../config-examples/CustomWebserviceDataObject-1.scala).
+At the end, your config file should look something like [this](../config-examples/application-download-part3-custom-webservice.conf) and the CustomWebserviceDataObject code like [this](../config-examples/CustomWebserviceDataObject-1.scala).
