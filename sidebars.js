@@ -1,8 +1,6 @@
 module.exports = {
   docs: {
-    'Smart Data Lake' : ['intro',
-      'build', 'features', 'reference', 'glossary', 'public-cloud', 'google-dataproc', 'microsoft-azure', 'yarn', 'testing', 'troubleshooting'
-    ],
+    'Smart Data Lake' : ['intro', 'features'],
     'Getting Started' : [
       'getting-started/setup',
       'getting-started/get-input-data',
@@ -26,11 +24,24 @@ module.exports = {
         ]
       }
 
-    ]//,
-    //'HOCON Configuration' : ['hoconOverview','hoconDataObjects','hoconActions'],
-    //'Concepts': ['dag','executionPhases'],
-    //'Features': ['featuresOverview'],
-    //'Architecture': ['archConcepts','archRunInCloud'],
-    //'Troubleshooting': ['troubleOverview']
+    ],
+    'Reference' : [
+        'reference/build',
+        'reference/commandLine',
+        'reference/hoconOverview',
+        'reference/hoconElements',
+        'reference/dag',
+        'reference/executionPhases',
+        'reference/executionModes',
+        'reference/transformations',
+        'reference/schemaEvolution',
+        'reference/housekeeping',
+        'reference/streaming',
+        'reference/metrics',
+        'reference/deploymentOptions',
+        'reference/testing',
+        'reference/troubleshooting',
+        'reference/glossary'
+    ],
   }
 };

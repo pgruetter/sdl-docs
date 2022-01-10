@@ -3,12 +3,13 @@ id: features
 title: Features
 ---
 
-The following is a list of implemented and planned (Future) features of Smart Data Lake Builder.
+Smart Data Lake Builder is still under heavy development so new features are added all the time.
+The following list will give you an overview of current and planned features.
 
 ## Filebased metadata
-* Easily versionable with a VCS for DevOps
+* Easy to version with a VCS for DevOps
 * Flexible structure by splitting over multiple files and subdirectories
-* Easily generateable from third party metadata (e.g. source system table catalog) to automate transformation of huge number of DataObjects
+* Easy to generate from third party metadata (e.g. source system table catalog) to automate transformation of large number of DataObjects
 
 ## Support for complex workflows & streaming
 * Fork, join, parallel execution, multiple start- & end-nodes possible
@@ -23,14 +24,14 @@ The following is a list of implemented and planned (Future) features of Smart Da
 ## Connectivity
 * Spark: diverse connectors (HadoopFS, Hive, DeltaLake, JDBC, Kafka, Splunk, Webservice, JMS) and formats (CSV, JSON, XML, Avro, Parquet, Excel, Access …)
 * File: SFTP, Local, Webservice
-* Easily extendable through implementing predefined scala traits
+* Easy to extend by implementing predefined scala traits
 * Support for getting secrets from different secret providers
 * Support for SQL update & merge (Jdbc, DeltaLake)
 
 ## Generic Transformations
 * Spark based: Copy, Historization, Deduplication (incl. incremental update/merge mode for streaming)
 * File based: FileTransfer
-* Easily extendable through implementing predefined scala traits
+* Easy to extend by implementing predefined scala traits
 * Future: applying MLFlow machine learning models
 
 ## Customizable Transformations
@@ -44,12 +45,14 @@ The following is a list of implemented and planned (Future) features of Smart Da
     * Only one to one (one InputStream to one OutputStream)
 
 ## Early Validation
+(see [execution phases](reference/executionPhases.md) for details)
 * Execution in 3 phases before execution
     * Load Config: validate configuration
     * Prepare: validate connections
     * Init: validate Spark DataFrame Lineage (missing columns in transformations of later actions will stop the execution)
 
 ## Execution Modes
+(see [execution Modes](reference/executionModes.md) for details)
 * Process all data
 * Partition parameters: give partition values to process for start nodes as parameter
 * Partition Diff: search missing partitions and use as parameter

@@ -1,6 +1,6 @@
 ---
-id: yarn
-title: Run on YARN
+id: deployYarn
+title: Deploy on YARN
 ---
 
 Smart Data Lake can be easily executed on a YARN cluster by spark-submit.

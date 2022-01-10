@@ -1,6 +1,6 @@
 ---
-id: google-dataproc
-title: Run on Google Dataproc
+id: deploy-google-dataproc
+title: Deploy on Google Dataproc
 ---
 
 Smart Data Lake can be executed on the Google Cloud platform using their Dataproc service.
@@ -12,7 +12,7 @@ The following steps will show you how to set everything up and start a first dat
 2. Build the project (with activated profile fat-jar) if you haven't done that already,
     then upload the smartdatalake-&ltversion&gt-jar-with-dependencies.jar to the bucket. The easiest way is through the Cloud Console.
 
-![Upload jar file](images/google_01_upload_jar.png)
+![Upload jar file](../images/google_01_upload_jar.png)
 
 1.  Also copy yor application.conf to the bucket that way.
 
@@ -60,8 +60,8 @@ The following steps will show you how to set everything up and start a first dat
     Main class: io.smartdatalake.app.DefaultConfigurableApp
     Arguments: parameters and values on seperate lines, see README
     ```  
-    ![Job creation](images/google_02_job.png)
+    ![Job creation](../images/google_02_job.png)
 
 1.  Click on Submit and wait for the job to finish. If everything worked as expected, your output should have been written to your bucket:
 
-    ![Result](images/google_03_result.png)
+    ![Result](../images/google_03_result.png)

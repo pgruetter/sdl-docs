@@ -3,6 +3,10 @@ id: troubleshooting
 title: Troubleshooting
 ---
 
+:::info
+If you have problems with the getting started guide, note that there's a separate [troubleshooting section](../getting-started/common-problems.md).
+:::
+
 ## Windows: missing winutils
 Error: `java.io.IOException: Could not locate executable null\bin\winutils.exe in the Hadoop binaries`
 

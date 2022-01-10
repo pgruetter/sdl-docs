@@ -1,6 +1,6 @@
 ---
-id: microsoft-azure
-title: Run on Microsoft Azure Databricks
+id: deploy-microsoft-azure
+title: Deploy on Microsoft Azure Databricks
 ---
 
 Smart Data Lake can be executed on the Databricks Service running on Microsoft Azure.
