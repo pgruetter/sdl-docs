@@ -44,7 +44,7 @@ module.exports = {
         //'reference/metrics',
         //'reference/deploymentOptions',
         //'reference/testing',
-        //'reference/troubleshooting',
+        'reference/troubleshooting',
         //'reference/glossary'
     ],
   }
