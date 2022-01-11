@@ -35,7 +35,7 @@ module.exports = {
         //'reference/hoconOverview',
         //'reference/hoconElements',
         //'reference/dag',
-        //'reference/executionPhases',
+        'reference/executionPhases',
         //'reference/executionModes',
         //'reference/transformations',
         //'reference/schemaEvolution',
