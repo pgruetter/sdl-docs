@@ -15,7 +15,7 @@ More details and options are described below.
 
 ### Global Options
 In the global section of the configuration you can set global configurations such as spark options used by all executions.
-You can find a list of all configurations under [API docs](site/scaladocs/io/smartdatalake/app/GlobalConfig.html).  
+You can find a list of all configurations under [API docs](https://smartdatalake.ch/docs/site/scaladocs/io/smartdatalake/app/GlobalConfig.html).  
 A good list with examples can be found in the [application.conf](https://github.com/smart-data-lake/sdl-examples/blob/develop/src/main/resources/application.conf) of sdl-examples.
 
 ### Secrets User and Password Variables
