@@ -98,11 +98,11 @@ Because you deleted all data first.
 
 Remember from part 1 that we either need to define a schema for our downloaded files or we need to execute the download steps separately on the first run.
 The first command only executes the download steps, the second command executes everything but the download steps (regex with negative lookahead).
-See [Common Problems](common-problems) for more Info.
+See [Common Problems](../troubleshooting/common-problems.md) for more Info.
 :::
 
 
-Getting an error like `io.smartdatalake.util.webservice.WebserviceException: Read timed out`? Check the list of [Common Problems](common-problems) for a workaround.
+Getting an error like `io.smartdatalake.util.webservice.WebserviceException: Read timed out`? Check the list of [Common Problems](../troubleshooting/common-problems) for a workaround.
 
 ## Reading Delta Lake Format with Spark
 
@@ -123,7 +123,7 @@ This might take multiple minutes.
 You should now be able to access Polynote at `localhost:8192`. 
 
 :::info Docker on Windows
-If you use Windows, please read our note on [Docker for Windows](docker-on-windows).
+If you use Windows, please read our note on [Docker for Windows](../troubleshooting/docker-on-windows).
 :::
 
 But when you walk through the prepared notebook "SelectingData", you won't see any tables and data yet. 
@@ -153,7 +153,7 @@ When using podman you need to join the pod where the metastore is located with `
 
 After you run your data pipeline again, you should now be able to see our DataObjects data in Polynote.
 No need to restart Polynote, just open it again and run all cells.
-[This](config-examples/application-deltalake-part2.conf) is how the final configuration file should look like. Feel free to play around.
+[This](../config-examples/application-deltalake-part2.conf) is how the final configuration file should look like. Feel free to play around.
 
 :::tip Delta Lake tuning
 You might have seen that our data pipeline with DeltaTableDataObject runs a Spark stage with 50 tasks several times.

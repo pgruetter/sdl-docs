@@ -61,7 +61,7 @@ but this would have resulted in more complex code working with lists of inputs, 
 
 ## Try it out
 
-[This](config-examples/application-compute-part1-final.conf) is how the final config-file looks like.
+[This](../config-examples/application-compute-part1-final.conf) is how the final config-file looks like.
 
 You can execute the usual *docker run* command :
 
@@ -185,12 +185,12 @@ If that happens, the DAG will look like this:
 As you can see, in this example, the action *download-departures* failed because of a timeout.
 Because SDL determined that both downloads are independent, it was able to complete *select-airport-cols* succesfully.
 
-As explained in [a previous step of the guide](select-columns#more-on-feeds),
+As explained in [a previous step of the guide](select-columns.md#more-on-feeds),
 if your download fails you will have to re-execute the download feed before being able to execute
 .* again.
 
 
 **Congratulations!**  
 You successfully recreated the configuration file that is contained in the Docker Image you ran in the first step.
-If you look at [the docker command on the first step](setup.md), you will notice that there was no path specified for the configuration file.
+If you look at [the docker command on the first step](../setup.md), you will notice that there was no path specified for the configuration file.
 By default, SDL looks for the config under *src/main/resources*, which is also part of the Docker Image that you created.

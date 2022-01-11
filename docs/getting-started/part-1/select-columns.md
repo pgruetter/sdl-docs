@@ -5,7 +5,7 @@ title: Select Columns
 ## Goal
 
 In this step we write our first Action that modifies data.
-We will continue based upon the config file available [here](config-examples/application-download-part1.conf).
+We will continue based upon the config file available [here](../config-examples/application-download-part1.conf).
 When you look at the data in the folder *data/stg-airports/result.csv*, you will notice that we
 don't need most of the columns. In this step, we will write a simple *CopyAction* that selects only the columns we
 are interested in.
@@ -94,7 +94,7 @@ If you encounter an error that looks like this:
     Caused by: java.lang.IllegalArgumentException: requirement failed: (DataObject~stg-airports) DataObject schema is undefined. A schema must be defined if there are no existing files.
 
 Execute the feed download again. After that feed was successfully executed, the execution of the feed .* or compute will work.
-More one this problem in the List of [Common Problems](common-problems).
+More one this problem in the List of [Common Problems](../troubleshooting/common-problems.md).
 
 
 :::

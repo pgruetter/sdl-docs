@@ -7,7 +7,7 @@ title: Technical Setup
 
 To run this tutorial you just need two things:
 
-- [Docker](https://www.docker.com/get-started), including docker-compose. If you use Windows, please read our note on [Docker for Windows](docker-on-windows),
+- [Docker](https://www.docker.com/get-started), including docker-compose. If you use Windows, please read our note on [Docker for Windows](troubleshooting/docker-on-windows.md),
 - The [source code of the example](https://github.com/smart-data-lake/getting-started).
 
 ## Build docker image

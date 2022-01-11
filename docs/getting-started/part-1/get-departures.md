@@ -120,7 +120,7 @@ Metadata can also help a lot in documenting your data pipelines and making its d
 
 ## Try it out
 
-Let's execute our action. We now come back to a similar *docker run* command as in the [setup step](getting-started/setup.md) of our guide.
+Let's execute our action. We now come back to a similar *docker run* command as in the [setup step](../setup.md) of our guide.
 The only difference is that we mount 2 volumes instead of one and specify the path to your config file.
 Before, we only mounted the data folder so that you could see the results of the execution on your machine.
 The config file that was being used was located inside the docker image.
@@ -134,7 +134,7 @@ After executing it, you will see the file *data/stg_departures/result.json* has 
 Since both web servers are freely available on the internet, they might be overloaded by traffic.
 If the download fails because of a timeout, either increase *readTimeoutMs* or wait a couple of minutes and try again.
 If the download still won't work (or if you just get empty files), you can copy the contents of the folder *data-fallback-download*
-into your data folder. This will allow you to execute all steps starting from [Select Columns](getting-started/select-columns.md)
+into your data folder. This will allow you to execute all steps starting from [Select Columns](select-columns.md)
 :::
 
 In case you run into issues when executing your pipeline and you want to terminate the process
