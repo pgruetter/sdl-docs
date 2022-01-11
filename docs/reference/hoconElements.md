@@ -3,6 +3,9 @@ id: hoconElements
 title: Hocon Elements
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
 
 ## Connections
 Some Data Objects need a connection, e.g. JdbcTableDataObject, as they need to know how to connect to a database.

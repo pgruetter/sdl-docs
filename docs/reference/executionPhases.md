@@ -3,6 +3,10 @@ id: executionPhases
 title: Execution Phases
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 ### Execution phases - early validation
 Execution of a SmartDataLakeBuilder run is designed with "early validation" in mind. This means it tries to fail as early as possible if something is wrong.
 Execution therefore involves the following phases.

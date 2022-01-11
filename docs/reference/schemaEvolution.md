@@ -3,6 +3,10 @@ id: schemaEvolution
 title: Schema Evolution
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 ## Schema Evolution
 SmartDataLakeBuilder is built to support schema evolution where possible. This means that data pipelines adapt themselves automatically to additional or removed columns and changes of data types if possible.
 The following cases can be distinguished:

@@ -3,6 +3,10 @@ id: hoconOverview
 title: Hocon Configurations
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 ## Overview
 The configuration files are stored in the [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) file format.
 The main sections are global, connections, data objects and actions.

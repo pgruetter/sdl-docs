@@ -3,6 +3,10 @@ id: testing
 title: Testing
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 Testing is crucial for software quality and maintenance. This is also true for data pipelines.
 
 SDL provides the following possibilities for Testing:

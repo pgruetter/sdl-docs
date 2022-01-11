@@ -3,6 +3,9 @@ id: commandLine
 title: Command Line
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
 
 # Command Line
 SmartDataLakeBuilder is a java application. To run on a cluster with spark-submit use **DefaultSmartDataLakeBuilder** application.

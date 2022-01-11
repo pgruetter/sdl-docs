@@ -3,6 +3,10 @@ id: deploymentOptions
 title: Deployment options
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 Smart Data Lake Builder is build to run anywhere.
 As seen in [Getting Started](../getting-started/setup.md), you can easily run it in Docker with small flat files,
 but you can just as well run it in a large cluster to leverage the resources of your on-premise or cloud infrastructure.

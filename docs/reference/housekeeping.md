@@ -3,6 +3,9 @@ id: housekeeping
 title: Housekeeping
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
 
 ## Housekeeping
 SmartDataLakeBuilder supports housekeeping for DataObjects by specifying the HousekeepingMode.

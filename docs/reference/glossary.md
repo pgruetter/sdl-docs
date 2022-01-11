@@ -3,6 +3,10 @@ id: glossary
 title: Glossary
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 Term|Description
 ---|---
 Action|Defines how data is moved / transformed from one data object to another. Please refer to the [API](site/scaladocs/io/smartdatalake/workflow/action/package.html) to get an overview. It is possible and often necessary to define custom transformations which can be done by a SQL statement or Scala Code.

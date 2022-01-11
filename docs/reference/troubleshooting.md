@@ -3,6 +3,10 @@ id: troubleshooting
 title: Troubleshooting
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 :::info
 If you have problems with the getting started guide, note that there's a separate [troubleshooting section](../getting-started/troubleshooting/common-problems.md).
 :::

@@ -3,6 +3,10 @@ id: metrics
 title: Metrics
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 ## Metrics
 Metrics are gathered per Action and output-DataObject when running a DAG. They can be found in log statements and are written to the state file.
 
