@@ -31,7 +31,7 @@ module.exports = {
     ],
     'Reference' : [
         'reference/build',
-        //'reference/commandLine',
+        'reference/commandLine',
         //'reference/hoconOverview',
         //'reference/hoconElements',
         //'reference/dag',
