@@ -4,7 +4,7 @@ title: Troubleshooting
 ---
 
 :::info
-If you have problems with the getting started guide, note that there's a separate [troubleshooting section](../getting-started/common-problems.md).
+If you have problems with the getting started guide, note that there's a separate [troubleshooting section](../getting-started/troubleshooting/common-problems.md).
 :::
 
 ## Windows: missing winutils
