@@ -293,7 +293,7 @@ The Scala code in the configuration above gets compiled when ScalaCodeDfTransfor
 You have now seen different parts of industrializing a data pipeline like robust data formats and caring about historical data.
 Further, you have explored data interactively with a notebook. 
 
-The final configuration file of Part 2 should look like [this](config-examples/application-historical-part2.conf)
+The final configuration file of Part 2 should look like [this](../config-examples/application-historical-part2.conf)
 
 In part 3 we will see how to incrementally load fresh flight data and optimize deduplication and historization.
 See you!

@@ -6,21 +6,25 @@ module.exports = {
       'getting-started/get-input-data',
       {
         'Part 1': [
-          'getting-started/get-departures',
-          'getting-started/get-airports',
-          'getting-started/select-columns',
-          'getting-started/joining-it-together',
-          'getting-started/joining-departures-and-arrivals',
-          'getting-started/compute-distances'
+          'getting-started/part-1/get-departures',
+          'getting-started/part-1/get-airports',
+          'getting-started/part-1/select-columns',
+          'getting-started/part-1/joining-it-together',
+          'getting-started/part-1/joining-departures-and-arrivals',
+          'getting-started/part-1/compute-distances'
         ],
         'Part 2': [
-            'getting-started/industrializing',
-            'getting-started/delta-lake-format',
-            'getting-started/historical-data'
+            'getting-started/part-2/industrializing',
+            'getting-started/part-2/delta-lake-format',
+            'getting-started/part-2/historical-data'
+        ],
+        'Part 3': [
+          'getting-started/part-3/custom-webservice',
+          'getting-started/part-3/incremental-mode'
         ],
         'Troubleshooting': [
-          'getting-started/common-problems',
-          'getting-started/docker-on-windows',
+          'getting-started/troubleshooting/common-problems',
+          'getting-started/troubleshooting/docker-on-windows'
         ]
       }
 
