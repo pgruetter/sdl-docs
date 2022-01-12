@@ -3,6 +3,10 @@ id: deploy-google-dataproc
 title: Deploy on Google Dataproc
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
 Smart Data Lake can be executed on the Google Cloud platform using their Dataproc service.
 The following steps will show you how to set everything up and start a first data load.
 

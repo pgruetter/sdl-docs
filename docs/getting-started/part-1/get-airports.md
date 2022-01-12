@@ -60,7 +60,7 @@ If you have large configuration files, it can sometimes be confusing to see an e
 it's not on the part you are currently working on but in a different section.
 :::
 
-SDL is built to detect configuration errors as early as possible (early-validation). It does this by going through several phases.
+SDL is built to detect configuration errors as early as possible (early-validation). It does this by going through several phases. 
 1. Validate configuration  
 validate superfluous attributes, missing mandatory attributes, attribute content and consistency when referencing other configuration objects.
 2. *Prepare* phase  
@@ -72,6 +72,8 @@ executes the whole feed *without any data* to spot incompatibilities between the
 only if all previous phases have been passed successfully, execution is started.
 
 When running SDL, you can clearly find "prepare", "init" and "exec" steps for every Action in the logs.
+
+See [this page](/docs/reference/executionPhases) for a detailed description on the execution phases of SDL.
 
 Now is a good time to fix both errors in your configuration file and execute the action again.
 
