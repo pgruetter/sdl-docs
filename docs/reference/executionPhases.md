@@ -10,7 +10,7 @@ The following phases are involved during each execution:
 1. **Parse configuration**:   
 Parses and validates your configuration files    
 This step fails if there is anything wrong with your configuration, i.e. if a required attribute is missing or a whole block like `actions {}` is missing or misspelled.
-There's also a neat feature that will warn you of typos and will suggest correct spellings if it can.
+There's also a neat feature that will warn you of typos and will suggest spelling corrections if it can.
 2. **DAG prepare:**  
 Preconditions are validated  
 This includes testing Connections and DataObject structures that must exists.
