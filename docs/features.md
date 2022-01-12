@@ -4,7 +4,8 @@ title: Features
 ---
 
 Smart Data Lake Builder is still under heavy development so new features are added all the time.
-The following list will give you an overview of current and planned features.
+The following list will give you a rough overview of current and planned features.
+More details on the roadmap will follow shortly.
 
 ## Filebased metadata
 * Easy to version with a VCS for DevOps
