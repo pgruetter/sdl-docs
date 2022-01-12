@@ -3,8 +3,8 @@ id: contribution
 title: Contribute
 ---
 Please check the 
-[Contributing Guidelines](https://github.com/smart-data-lake/smart-data-lake/blob/develop/CONTRIBUTING.md) and 
-[Code of Conduct](https://github.com/smart-data-lake/smart-data-lake/blob/develop/CODE_OF_CONDUCT.md)
+[Contributing Guidelines](https://github.com/smart-data-lake/smart-data-lake/blob/master-spark3/CONTRIBUTING.md) and 
+[Code of Conduct](https://github.com/smart-data-lake/smart-data-lake/blob/master-spark3/CODE_OF_CONDUCT.md)
 first.
 You'll find some additional information on how to setup your development environment.
 

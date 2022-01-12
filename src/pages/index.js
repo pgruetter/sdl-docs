@@ -9,7 +9,7 @@ import styles from './styles.module.css';
 const features = [
   {
     title: 'Powered by Apache Spark',
-    imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    imageUrl: 'img/Apache_Spark_logo.svg',
     description: (
       <>
         Smart Data Lake Builder builds on top of Apache Spark and as such
@@ -19,17 +19,18 @@ const features = [
   },
   {
     title: 'Meta data driven',
-    imageUrl: 'img/undraw_docusaurus_tree.svg',
+    imageUrl: 'img/checklist.svg',
     description: (
       <>
-        Metadata defines your pipelines, Smart Data Lake Builder will do
+        Metadata defines your pipelines. <br></br>
+        Smart Data Lake Builder will do
             the magic to optimally execute them.
       </>
     ),
   },
   {
     title: 'Open Ecosystem',
-    imageUrl: 'img/undraw_docusaurus_react.svg',
+    imageUrl: 'img/chain.svg',
     description: (
       <>
         No vendor lock-in as we're building on open source.

@@ -7,8 +7,8 @@ title: Notes for Windows Users
 You can use Docker Desktop for Windows together with Windows command line or Windows Linux Subsystem (WSL2) for this tutorial. But note that Docker Desktop for Windows needs a license for commercial use
 beginning of 2022.
 
-There is a free alternative for Linux or WSL2 called Podman from Redhat, which has a compatible command line and also the Dockerfiles are compatible, see [podman.io](https://podman.io/).
-Further advantages are that Podman is more lightweight - it doesn't need a service and root privileges to run containers.
+There is a free alternative for Linux or WSL2 called podman from Redhat, which has a compatible command line and also the Dockerfiles are compatible, see [podman.io](https://podman.io/).
+Further advantages are that podman is more lightweight - it doesn't need a service and root privileges to run containers.
 Install podman on WSL2 Ubuntu:
 
     . /etc/os-release
@@ -20,7 +20,7 @@ Install podman on WSL2 Ubuntu:
 
 ## Using podman compose
 For [part 2 of this guide](../part-2/delta-lake-format.md), you need docker compose.
-For Windows, you can use the altenative podman compose.
+For Windows, you can use the alternative podman compose.
 Install podman-compose for podman in WSL2:
 
     sudo apt install python3-pip
