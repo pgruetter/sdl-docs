@@ -38,7 +38,7 @@ Define a failCondition by a spark sql expression working with attributes of Part
 
 Example - fail if partitions are not processed in strictly increasing order of partition column "dt":
 ```
-  failCondition = "(size(selectedPartitionValues) &gt 0 and array_min(transform(selectedPartitionValues, x -&gt x.dt)) &lt array_max(transform(outputPartitionValues, x -&gt x.dt)))"
+  failCondition = "(size(selectedPartitionValues) > 0 and array_min(transform(selectedPartitionValues, x -&gt x.dt)) &lt array_max(transform(outputPartitionValues, x > x.dt)))"
 ```
 
 Sometimes the failCondition can become quite complex with multiple terms concatenated by or-logic.

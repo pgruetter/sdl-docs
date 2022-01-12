@@ -22,7 +22,8 @@ const features = [
     imageUrl: 'img/checklist.svg',
     description: (
       <>
-        Metadata defines your pipelines, Smart Data Lake Builder will do
+        Metadata defines your pipelines. <br></br>
+        Smart Data Lake Builder will do
             the magic to optimally execute them.
       </>
     ),

@@ -3,6 +3,11 @@ id: deploy-microsoft-azure
 title: Deploy on Microsoft Azure Databricks
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
+
 Smart Data Lake can be executed on the Databricks Service running on Microsoft Azure.
 The following steps show how to execute a simple copy feed.
 

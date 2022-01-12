@@ -3,6 +3,11 @@ id: deployYarn
 title: Deploy on YARN
 ---
 
+:::warning
+This page is under review and currently not visible in the menu.
+:::
+
+
 Smart Data Lake can be easily executed on a YARN cluster by spark-submit.
 The following steps will show you how to set everything up and start a first data load.
 See [Running Spark on YARN](https://spark.apache.org/docs/latest/running-on-yarn.html) for detailed Spark configuration options.
