@@ -7,6 +7,7 @@ title: Hocon Configurations
 This page is under review and currently not visible in the menu.
 :::
 
+
 ## Overview
 The configuration files are stored in the [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) file format.
 The main sections are global, connections, data objects and actions.
@@ -19,6 +20,9 @@ You can find a list of all configurations under [API docs](https://smartdatalake
 A good list with examples can be found in the [application.conf](https://github.com/smart-data-lake/sdl-examples/blob/develop/src/main/resources/application.conf) of sdl-examples.
 
 ### Secrets User and Password Variables
+TODO:
+Mention Azure Key Vault here or at least point to the Azure specific doc to be created.
+
 Usernames, passwords and other secrets should not be stored in your configuration files in clear text as these files are often stored directly in the version control system.
 They should also not be visible in logfiles after execution.
 
