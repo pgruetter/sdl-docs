@@ -14,7 +14,7 @@ We will create a cluster init script that downloads the library and saves it on 
 This can hopefully be simplified in the future.
 
 1. In your Azure portal, create a Databricks Workspace and launch it
-2. Create a cluster as you see fit, for a first test you can use the miminal configuration of 1 Worker and 1 Driver node.
+2. Create a cluster that fits your needs. For a first test you can use the miminal configuration of 1 Worker and 1 Driver node.
     This example was tested on Databricks Runtime Version 6.2.
 3. Open the Advanced Options, Init Scripts and configure the path:
     dbfs:/databricks/scripts/config-install.sh
