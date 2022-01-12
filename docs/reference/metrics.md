@@ -8,7 +8,7 @@ This page is under review and currently not visible in the menu.
 :::
 
 ## Metrics
-Metrics are gathered per Action and output-DataObject when running a DAG. They can be found in log statements and are written to the state file.
+While the DAG is running, metrics are gathered for each Action and output-DataObject. They can be found in log statements and are written to the state file.
 
 Sample log message:
 `2020-07-21 11:36:34 INFO  CopyAction:105 - (Action~a) finished writing DataFrame to DataObject~tgt1: duration=PT0.906S records_written=1 bytes_written=1142 num_tasks=1 stage=save`
