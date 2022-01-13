@@ -1,6 +1,6 @@
 module.exports = {
   title: 'Smart Data Lake Builder',
-  tagline: 'A smart Automation Tool for modern Data Lakes and Data Pipelines',
+  tagline: 'A smart Automation Tool for building modern Data Lakes and Data Pipelines',
   url: 'https://pgruetter.github.io',
   baseUrl: '/sdl-docs/',
   onBrokenLinks: 'throw',
