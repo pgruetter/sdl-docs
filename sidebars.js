@@ -47,5 +47,8 @@ module.exports = {
         'reference/troubleshooting',
         //'reference/glossary'
     ],
+    'Tools' : [
+      'json-schema-viewer/jsonSchemaViewer',
+  ],
   }
 };
