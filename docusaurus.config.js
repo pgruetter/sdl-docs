@@ -23,7 +23,7 @@ module.exports = {
           label: 'Docs',
           position: 'left',
         },
-        {to: 'blog', label: 'Blog', position: 'left'},
+//        {to: 'blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/smart-data-lake/smart-data-lake',
           label: 'GitHub',
@@ -59,10 +59,10 @@ module.exports = {
         {
           title: 'More',
           items: [
-            {
-              label: 'Blog',
-              to: 'blog',
-            },
+            // {
+            //   label: 'Blog',
+            //   to: 'blog',
+            // },
             {
               label: 'ELCA',
               href: 'https://www.elca.ch'
